@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel V33 — AI Interview Auditor</title>
+    <title>Sentinel V34 — AI Interview Auditor</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -34,41 +34,92 @@
         }
         .wrapper { max-width: 900px; margin: 0 auto; }
 
-        /* LANDING PAGE */
-        .landing { text-align: center; padding: 60px 20px; }
-        .landing-logo { width: 64px; height: 64px; border: 2px solid var(--green); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 800; color: var(--green); font-size: 28px; margin: 0 auto 32px; }
-        .landing h1 { font-family: var(--display); font-weight: 800; font-size: 42px; color: white; letter-spacing: -1px; margin-bottom: 16px; }
-        .landing h1 span { color: var(--green); }
-        .landing p { font-size: 15px; color: var(--text-dim); max-width: 520px; margin: 0 auto 48px; line-height: 1.8; }
-        .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 48px; }
-        .feature { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: left; }
-        .feature-icon { font-size: 20px; margin-bottom: 10px; }
-        .feature-title { font-family: var(--display); font-weight: 700; color: white; font-size: 13px; margin-bottom: 6px; }
-        .feature-desc { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+        /* STEP INDICATOR */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 40px;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--text-dim);
+            background: var(--surface);
+            transition: all 0.3s;
+        }
+        .step-circle.active { border-color: var(--green); color: var(--green); background: rgba(0,255,135,0.08); }
+        .step-circle.done { border-color: var(--green-dim); background: var(--green-dim); color: #080c0a; }
+        .step-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+        .step-label.active { color: var(--green); }
+        .step-line { width: 60px; height: 2px; background: var(--border); margin-bottom: 20px; }
+        .step-line.done { background: var(--green-dim); }
 
         /* HEADER */
-        .header { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+        .header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
         .logo-mark { width: 42px; height: 42px; border: 2px solid var(--green); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 800; color: var(--green); font-size: 18px; flex-shrink: 0; }
         .header-text h1 { font-family: var(--display); font-weight: 800; font-size: 20px; color: white; letter-spacing: -0.5px; }
         .header-text p { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
         .badge { margin-left: auto; font-size: 10px; background: rgba(0,255,135,0.08); color: var(--green); border: 1px solid rgba(0,255,135,0.2); padding: 4px 10px; border-radius: 20px; letter-spacing: 0.06em; text-transform: uppercase; }
 
-        /* PROCTOR */
-        #proctorContainer { position: fixed; top: 24px; right: 24px; width: 160px; display: none; z-index: 100; }
-        #videoFeed { width: 100%; border-radius: 10px; border: 1px solid rgba(0,255,135,0.3); transform: scaleX(-1); display: block; }
-        .cam-label { font-size: 9px; color: var(--green); text-align: center; margin-top: 6px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
-        .cam-dot { display: inline-block; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; margin-right: 5px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        /* LANDING */
+        .landing { text-align: center; padding: 60px 20px; }
+        .landing-logo { width: 64px; height: 64px; border: 2px solid var(--green); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 800; color: var(--green); font-size: 28px; margin: 0 auto 32px; }
+        .landing h1 { font-family: var(--display); font-weight: 800; font-size: 42px; color: white; letter-spacing: -1px; margin-bottom: 16px; }
+        .landing h1 span { color: var(--green); }
+        .landing p { font-size: 15px; color: var(--text-dim); max-width: 520px; margin: 0 auto 48px; line-height: 1.8; }
+        .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 48px; }
+        .feature { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: left; }
+        .feature-icon { font-size: 20px; margin-bottom: 10px; }
+        .feature-title { font-family: var(--display); font-weight: 700; color: white; font-size: 12px; margin-bottom: 6px; }
+        .feature-desc { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
 
         /* CARDS */
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-bottom: 16px; position: relative; overflow: hidden; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 16px; position: relative; overflow: hidden; }
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,255,135,0.3), transparent); }
         .card-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+        .card-title { font-family: var(--display); font-weight: 800; font-size: 16px; color: white; margin-bottom: 6px; }
+        .card-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.6; }
 
         /* INPUTS */
-        input[type="password"], input[type="text"], textarea { width: 100%; padding: 14px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: var(--mono); font-size: 13px; resize: vertical; transition: border-color 0.2s; outline: none; }
-        input[type="password"]:focus, input[type="text"]:focus, textarea:focus { border-color: rgba(0,255,135,0.4); }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="password"], textarea, select {
+            width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text); font-family: var(--mono); font-size: 13px;
+            resize: vertical; transition: border-color 0.2s; outline: none;
+        }
+        input:focus, textarea:focus, select:focus { border-color: rgba(0,255,135,0.4); }
         input::placeholder, textarea::placeholder { color: var(--text-dim); }
+        select option { background: var(--surface); }
+
+        /* FORM GRID */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field.full { grid-column: 1 / -1; }
+        .field-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+
+        /* RADIO / CHECKBOX */
+        .radio-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+        .radio-option { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .radio-option input { width: auto; cursor: pointer; accent-color: var(--green); }
+        .radio-option span { font-size: 13px; color: var(--text); }
+
+        /* SCREENING QUESTION */
+        .screening-q { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
+        .screening-q-text { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 12px; }
+        .screening-q-type { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
 
         /* BUTTONS */
         .btn { width: 100%; padding: 16px; background: var(--green); border: none; border-radius: 10px; color: #080c0a; font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: 0.04em; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 8px; }
@@ -80,10 +131,24 @@
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
 
         /* LOADING */
-        #loadingGen { display: none; text-align: center; padding: 20px; color: var(--green); font-size: 12px; letter-spacing: 0.08em; }
         .loading-bar { width: 100%; height: 2px; background: var(--border); border-radius: 2px; margin-top: 12px; overflow: hidden; }
         .loading-bar-fill { height: 100%; background: var(--green); border-radius: 2px; animation: load 2s ease-in-out infinite; }
         @keyframes load { 0% { width: 0%; margin-left: 0; } 50% { width: 70%; margin-left: 15%; } 100% { width: 0%; margin-left: 100%; } }
+        .loading-text { text-align: center; padding: 20px; color: var(--green); font-size: 12px; letter-spacing: 0.08em; display: none; }
+
+        /* PROCTOR */
+        #proctorContainer { position: fixed; top: 24px; right: 24px; width: 160px; display: none; z-index: 100; }
+        #videoFeed { width: 100%; border-radius: 10px; border: 1px solid rgba(0,255,135,0.3); transform: scaleX(-1); display: block; }
+        .cam-label { font-size: 9px; color: var(--green); text-align: center; margin-top: 6px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
+        .cam-dot { display: inline-block; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; margin-right: 5px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* INTEGRITY */
+        #integrityPanel { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; font-size: 11px; display: none; min-width: 200px; }
+        .integrity-title { color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; font-size: 9px; margin-bottom: 10px; }
+        .integrity-item { display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--text); }
+        .integrity-item .val { color: var(--warn); }
+        .integrity-item .val.clean { color: var(--green); }
 
         /* QUESTION */
         .question-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
@@ -95,20 +160,12 @@
         /* TIMER */
         .timer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .timer { font-size: 11px; color: var(--text-dim); }
-        .timer span { color: var(--warn); }
 
         /* PROGRESS */
         .progress-row { display: flex; gap: 8px; margin-bottom: 24px; }
         .progress-dot { flex: 1; height: 3px; background: var(--border); border-radius: 3px; transition: background 0.3s; }
         .progress-dot.active { background: var(--green); }
         .progress-dot.done { background: var(--green-dim); opacity: 0.5; }
-
-        /* INTEGRITY PANEL */
-        #integrityPanel { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; font-size: 11px; display: none; min-width: 200px; }
-        .integrity-title { color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; font-size: 9px; margin-bottom: 10px; }
-        .integrity-item { display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--text); }
-        .integrity-item .val { color: var(--warn); }
-        .integrity-item .val.clean { color: var(--green); }
 
         /* REPORT */
         .report-section { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 12px; }
@@ -129,20 +186,22 @@
         .verdict-box.pass .verdict-text { color: var(--green); }
         .verdict-box.fail .verdict-text { color: var(--danger); }
         .verdict-box.warn .verdict-text { color: var(--warn); }
-        .integrity-warning { background: rgba(255,68,85,0.08); border: 1px solid rgba(255,68,85,0.3); border-radius: 10px; padding: 16px; margin-bottom: 12px; font-size: 13px; color: var(--danger); }
         .prose { font-size: 13px; line-height: 1.8; color: var(--text); }
         .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .tag { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-dim); }
         .tag.strength { border-color: rgba(0,255,135,0.3); color: var(--green); }
         .tag.weakness { border-color: rgba(255,68,85,0.3); color: var(--danger); }
+        .candidate-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .info-item { background: var(--bg); border-radius: 8px; padding: 12px; border: 1px solid var(--border); }
+        .info-item .info-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+        .info-item .info-value { font-size: 13px; color: white; }
 
-        /* COMPARISON TABLE */
+        /* COMPARISON */
         .comparison-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .comparison-table th { text-align: left; padding: 10px 12px; color: var(--text-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid var(--border); font-weight: 400; }
         .comparison-table td { padding: 12px; border-bottom: 1px solid var(--border); color: var(--text); }
         .comparison-table tr:last-child td { border-bottom: none; }
-        .comparison-table tr:hover td { background: rgba(255,255,255,0.02); }
-        .verdict-pill { font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 500; }
+        .verdict-pill { font-size: 10px; padding: 3px 8px; border-radius: 20px; }
         .verdict-pill.pass { background: rgba(0,255,135,0.1); color: var(--green); border: 1px solid rgba(0,255,135,0.2); }
         .verdict-pill.fail { background: rgba(255,68,85,0.1); color: var(--danger); border: 1px solid rgba(255,68,85,0.2); }
         .verdict-pill.warn { background: rgba(255,190,0,0.1); color: var(--warn); border: 1px solid rgba(255,190,0,0.2); }
@@ -150,6 +209,8 @@
         #finalView { display: none; text-align: center; padding: 40px 20px; }
         #finalView h2 { font-family: var(--display); font-weight: 800; font-size: 24px; color: white; margin-bottom: 10px; }
         #finalView p { color: var(--text-dim); font-size: 13px; margin-bottom: 28px; }
+
+        .integrity-warning { background: rgba(255,68,85,0.08); border: 1px solid rgba(255,68,85,0.3); border-radius: 10px; padding: 16px; margin-bottom: 12px; font-size: 13px; color: var(--danger); }
     </style>
 </head>
 <body>
@@ -169,7 +230,7 @@
 
 <div class="wrapper">
 
-    <!-- LANDING PAGE -->
+    <!-- LANDING -->
     <div id="landingPage">
         <div class="landing">
             <div class="landing-logo">S</div>
@@ -177,38 +238,36 @@
             <p>Paste a job description. Get a dynamic, AI-powered interview in 30 seconds. Every question tailored to the role. Every answer evaluated by a senior recruiter AI.</p>
             <div class="features">
                 <div class="feature">
-                    <div class="feature-icon">⚡</div>
-                    <div class="feature-title">Dynamic Questions</div>
-                    <div class="feature-desc">Generated from your JD in seconds. No templates, no generic questions.</div>
+                    <div class="feature-icon">👤</div>
+                    <div class="feature-title">Candidate Profile</div>
+                    <div class="feature-desc">Personal details and background collected upfront.</div>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">🔁</div>
-                    <div class="feature-title">Adaptive Follow-ups</div>
-                    <div class="feature-desc">Each follow-up challenges the candidate's specific answer, not a script.</div>
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Fit Screening</div>
+                    <div class="feature-desc">Role-specific questions generated from the JD.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Dynamic Interview</div>
+                    <div class="feature-desc">Case questions with adaptive follow-ups.</div>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">🛡️</div>
-                    <div class="feature-title">Integrity Monitoring</div>
-                    <div class="feature-desc">Tab switches, paste detection, and response time tracking built in.</div>
+                    <div class="feature-title">Integrity Monitor</div>
+                    <div class="feature-desc">Tab switches, paste detection, response timing.</div>
                 </div>
             </div>
             <button class="btn" style="max-width:300px; margin:0 auto;" onclick="showSetup()">Start Assessment →</button>
         </div>
     </div>
 
-    <!-- SETUP -->
+    <!-- SETUP (HR side) -->
     <div id="setupStep" style="display:none;">
         <div class="header">
             <div class="logo-mark">S</div>
-            <div class="header-text">
-                <h1>Sentinel Auditor</h1>
-                <p>AI-Powered Interview Assessment</p>
-            </div>
-            <div class="badge">V33</div>
-        </div>
-        <div class="card">
-            <div class="card-label">Candidate Name (optional)</div>
-            <input type="text" id="candidateName" placeholder="e.g. John Smith">
+            <div class="header-text"><h1>Sentinel Auditor</h1><p>HR Setup</p></div>
+            <div class="badge">V34</div>
         </div>
         <div class="card">
             <div class="card-label">OpenAI API Key</div>
@@ -216,26 +275,154 @@
         </div>
         <div class="card">
             <div class="card-label">Job Description</div>
-            <textarea id="jdInput" rows="10" placeholder="Paste the full job description here. The more detail, the sharper the questions."></textarea>
+            <textarea id="jdInput" rows="10" placeholder="Paste the full job description here..."></textarea>
         </div>
-        <button class="btn" id="generateBtn" onclick="generateDynamicCases()">Generate Assessment →</button>
-        <button class="btn btn-ghost" onclick="showComparison()" style="margin-top:8px;" id="compareBtn">📊 View Candidate Comparison</button>
-        <div id="loadingGen">
-            Analyzing JD — Building candidate profile...
+        <button class="btn" id="generateBtn" onclick="startAssessment()">Generate Assessment →</button>
+        <button class="btn btn-ghost" onclick="showComparison()" style="margin-top:8px;">📊 View Candidate Comparison</button>
+        <div class="loading-text" id="loadingSetup">
+            Analyzing JD — generating screening questions...
             <div class="loading-bar"><div class="loading-bar-fill"></div></div>
         </div>
     </div>
 
-    <!-- EXAM -->
+    <!-- STEP 1: PERSONAL DETAILS -->
+    <div id="personalStep" style="display:none;">
+        <div class="header">
+            <div class="logo-mark">S</div>
+            <div class="header-text"><h1>Sentinel Auditor</h1><p>Step 1 of 3 — Personal Details</p></div>
+            <div class="badge">V34</div>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step">
+                <div class="step-circle active">1</div>
+                <div class="step-label active">Profile</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <div class="step-circle">2</div>
+                <div class="step-label">Screening</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <div class="step-label">Interview</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Tell us about yourself</div>
+            <div class="card-desc">Please fill in your details before starting the assessment.</div>
+            <div class="form-grid">
+                <div class="form-field">
+                    <div class="field-label">Full Name *</div>
+                    <input type="text" id="p_name" placeholder="John Smith">
+                </div>
+                <div class="form-field">
+                    <div class="field-label">Email *</div>
+                    <input type="email" id="p_email" placeholder="john@email.com">
+                </div>
+                <div class="form-field">
+                    <div class="field-label">Phone</div>
+                    <input type="tel" id="p_phone" placeholder="+972-50-...">
+                </div>
+                <div class="form-field">
+                    <div class="field-label">City / Location *</div>
+                    <input type="text" id="p_city" placeholder="Tel Aviv, Israel">
+                </div>
+                <div class="form-field">
+                    <div class="field-label">Years of Experience *</div>
+                    <select id="p_experience">
+                        <option value="">Select...</option>
+                        <option>0-1 years</option>
+                        <option>1-2 years</option>
+                        <option>2-4 years</option>
+                        <option>4-7 years</option>
+                        <option>7-10 years</option>
+                        <option>10+ years</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <div class="field-label">Current / Last Role</div>
+                    <input type="text" id="p_role" placeholder="e.g. HR Manager at Startup X">
+                </div>
+                <div class="form-field full">
+                    <div class="field-label">LinkedIn Profile URL</div>
+                    <input type="text" id="p_linkedin" placeholder="https://linkedin.com/in/...">
+                </div>
+                <div class="form-field full">
+                    <div class="field-label">Are you open to relocation / hybrid work?</div>
+                    <div class="radio-group">
+                        <label class="radio-option"><input type="radio" name="relocation" value="Yes"> <span>Yes</span></label>
+                        <label class="radio-option"><input type="radio" name="relocation" value="No"> <span>No</span></label>
+                        <label class="radio-option"><input type="radio" name="relocation" value="Depends"> <span>Depends on terms</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn" onclick="submitPersonal()">Continue to Screening →</button>
+    </div>
+
+    <!-- STEP 2: SCREENING QUESTIONS -->
+    <div id="screeningStep" style="display:none;">
+        <div class="header">
+            <div class="logo-mark">S</div>
+            <div class="header-text"><h1>Sentinel Auditor</h1><p>Step 2 of 3 — Role Fit Screening</p></div>
+            <div class="badge">V34</div>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step">
+                <div class="step-circle done">✓</div>
+                <div class="step-label">Profile</div>
+            </div>
+            <div class="step-line done"></div>
+            <div class="step">
+                <div class="step-circle active">2</div>
+                <div class="step-label active">Screening</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <div class="step-label">Interview</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Role Fit Questions</div>
+            <div class="card-desc">Please answer the following questions based on your experience. Be specific and concise.</div>
+        </div>
+
+        <div id="screeningQuestionsContainer"></div>
+
+        <button class="btn" onclick="submitScreening()">Continue to Interview →</button>
+    </div>
+
+    <!-- STEP 3: INTERVIEW -->
     <div id="examBox" style="display:none;">
         <div class="header">
             <div class="logo-mark">S</div>
-            <div class="header-text">
-                <h1>Sentinel Auditor</h1>
-                <p id="candidateLabel">Assessment in progress</p>
-            </div>
-            <div class="badge">V33</div>
+            <div class="header-text"><h1>Sentinel Auditor</h1><p id="candidateLabel">Step 3 of 3 — Interview</p></div>
+            <div class="badge">V34</div>
         </div>
+
+        <div class="step-indicator">
+            <div class="step">
+                <div class="step-circle done">✓</div>
+                <div class="step-label">Profile</div>
+            </div>
+            <div class="step-line done"></div>
+            <div class="step">
+                <div class="step-circle done">✓</div>
+                <div class="step-label">Screening</div>
+            </div>
+            <div class="step-line done"></div>
+            <div class="step">
+                <div class="step-circle active">3</div>
+                <div class="step-label active">Interview</div>
+            </div>
+        </div>
+
         <div class="progress-row" id="progressRow"></div>
         <div class="card">
             <div class="question-meta">
@@ -246,8 +433,8 @@
             <div id="questionText"></div>
         </div>
         <div class="timer-row">
-            <span class="timer">Time on this question: <span id="timerDisplay">0:00</span></span>
-            <span class="timer" style="color:var(--text-dim);">Fast responses may indicate prepared answers</span>
+            <span class="timer">Time: <span id="timerDisplay">0:00</span></span>
+            <span class="timer" style="color:var(--text-dim); font-size:10px;">Fast responses may indicate prepared answers</span>
         </div>
         <textarea id="userAnswer" rows="9" placeholder="Type your answer here..."></textarea>
         <button class="btn" onclick="processStep()" style="margin-top:10px;" id="submitBtn">Submit Answer →</button>
@@ -256,7 +443,7 @@
     <!-- FINAL -->
     <div id="finalView">
         <h2>Assessment Complete</h2>
-        <p>Generating candidate dossier...</p>
+        <p>Generating your candidate dossier...</p>
         <div class="loading-bar" style="max-width:300px; margin:0 auto 28px;">
             <div class="loading-bar-fill"></div>
         </div>
@@ -269,11 +456,8 @@
     <div id="comparisonView" style="display:none;">
         <div class="header">
             <div class="logo-mark">S</div>
-            <div class="header-text">
-                <h1>Candidate Comparison</h1>
-                <p>All assessments this session</p>
-            </div>
-            <div class="badge">V33</div>
+            <div class="header-text"><h1>Candidate Comparison</h1><p>All assessments this session</p></div>
+            <div class="badge">V34</div>
         </div>
         <div id="comparisonTable"></div>
         <button class="btn btn-ghost" onclick="showSetup()" style="margin-top:8px;">← Back to Setup</button>
@@ -283,9 +467,12 @@
 
 <script>
     let dynamicCases = [];
+    let screeningQuestions = [];
     let currentStage = 0;
     let isFollowUp = false;
     let interviewLog = [];
+    let screeningLog = [];
+    let personalData = {};
     let integrityLog = [];
     let tabSwitches = 0;
     let pasteEvents = 0;
@@ -297,19 +484,14 @@
 
     // ── Navigation ────────────────────────────────────────────────────────
     function showSetup() {
-        document.getElementById('landingPage').style.display = 'none';
+        ['landingPage','examBox','finalView','recruiterReport','comparisonView','personalStep','screeningStep'].forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
         document.getElementById('setupStep').style.display = 'block';
-        document.getElementById('examBox').style.display = 'none';
-        document.getElementById('finalView').style.display = 'none';
-        document.getElementById('recruiterReport').style.display = 'none';
-        document.getElementById('comparisonView').style.display = 'none';
     }
 
     function showComparison() {
-        if (allCandidates.length === 0) {
-            alert("No completed assessments yet. Complete at least one assessment first.");
-            return;
-        }
+        if (allCandidates.length === 0) { alert("No completed assessments yet."); return; }
         renderComparison();
         document.getElementById('setupStep').style.display = 'none';
         document.getElementById('comparisonView').style.display = 'block';
@@ -317,7 +499,9 @@
 
     // ── Integrity ─────────────────────────────────────────────────────────
     document.addEventListener("visibilitychange", () => {
-        if (document.hidden && document.getElementById('examBox').style.display === 'block') {
+        const examVisible = document.getElementById('examBox').style.display === 'block' ||
+                           document.getElementById('screeningStep').style.display === 'block';
+        if (document.hidden && examVisible) {
             tabSwitches++;
             integrityLog.push({ type: "Tab Switch", time: new Date().toLocaleTimeString() });
             document.getElementById('tabCount').textContent = tabSwitches;
@@ -326,7 +510,9 @@
     });
 
     document.addEventListener("paste", () => {
-        if (document.getElementById('examBox').style.display === 'block') {
+        const examVisible = document.getElementById('examBox').style.display === 'block' ||
+                           document.getElementById('screeningStep').style.display === 'block';
+        if (examVisible) {
             pasteEvents++;
             integrityLog.push({ type: "Paste Event", time: new Date().toLocaleTimeString() });
             document.getElementById('pasteCount').textContent = pasteEvents;
@@ -377,102 +563,198 @@
         }
     }
 
-    // ── Generate Cases ────────────────────────────────────────────────────
-    async function generateDynamicCases() {
+    // ── Start Assessment ──────────────────────────────────────────────────
+    async function startAssessment() {
         const key = document.getElementById('apiKey').value.trim();
         const jd = document.getElementById('jdInput').value.trim();
         if (!key || !jd) return alert("Please provide both API Key and Job Description.");
 
-        document.getElementById('loadingGen').style.display = 'block';
+        document.getElementById('loadingSetup').style.display = 'block';
         document.getElementById('generateBtn').disabled = true;
 
-        const systemPrompt = `You are a senior hiring manager conducting a structured interview. Analyze the job description and generate exactly 3 interview case questions.
-
-STRICT RULES FOR EVERY QUESTION:
-1. Reference a SPECIFIC responsibility or qualification from the JD — no generic questions allowed
-2. MANDATORY: Every scenario must include AT LEAST 2 of these pressure elements:
-   - A specific dollar amount or financial impact (e.g. "$75,000 discrepancy", "15% budget overrun")
-   - A hard deadline creating urgency (e.g. "quarter-end close in 72 hours", "board presentation tomorrow at 9 AM")
-   - A named stakeholder with a clear stance (e.g. "Sarah, the CFO, is threatening to escalate", "the Finance Manager wants to shut it down")
-   - A concrete number that raises stakes (e.g. "8 out of 30 transactions flagged", "3 of your 5 agents went offline")
-3. The scenario must make the candidate FEEL the pressure — vague or abstract situations are REJECTED
-4. Match the seniority level in the JD exactly
-5. Each question tests exactly ONE of: crisis response, stakeholder conflict, technical judgment, process thinking
-6. Do NOT use gaming, ad-tech, or any industry unrelated to the JD
-7. End every question with:
-   "This question tests:
-   • [specific skill 1]
-   • [specific skill 2]
-   • [specific skill 3]"
-
-EXAMPLE of a GOOD question:
-"It is 4:00 PM on a Thursday. You deployed an AI agent 3 days ago to automate invoice reconciliation. The Finance Manager, David, just messaged you: the agent has mismatched 47 invoices totaling $82,000, and the monthly close is in 18 hours. David is about to escalate to the CFO. What do you do in the next 30 minutes?
-
-This question tests:
-• Crisis prioritization under a hard deadline
-• Stakeholder communication before escalation
-• Judgment on when to halt vs. fix a live system"
-
-EXAMPLE of a BAD question (NEVER do this):
-"How would you handle resistance from stakeholders when implementing AI automation?"
-
-Return ONLY a raw JSON array, no markdown:
-[{"title": "Phase 1: [short label]", "question": "Full scenario...\\n\\nThis question tests:\\n• skill 1\\n• skill 2\\n• skill 3"}, ...]`;
-
+        // Generate both screening questions AND interview cases in parallel
         try {
-            const res = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-                body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: "JD:\n" + jd }
-                    ],
-                    temperature: 0.7
-                })
-            });
+            const [screeningRes, casesRes] = await Promise.all([
+                generateScreeningQuestions(key, jd),
+                generateInterviewCases(key, jd)
+            ]);
 
-            const data = await res.json();
-            if (data.error) throw new Error(data.error.message);
+            screeningQuestions = screeningRes;
+            dynamicCases = casesRes;
 
-            const content = data.choices[0].message.content;
-            const jsonStr = content.substring(content.indexOf('['), content.lastIndexOf(']') + 1);
-            const cleanJson = jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' ');
-            dynamicCases = JSON.parse(cleanJson);
-
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                document.getElementById('videoFeed').srcObject = videoStream;
-                document.getElementById('proctorContainer').style.display = 'block';
-            } catch (e) {}
-
-            const name = document.getElementById('candidateName').value.trim();
-            document.getElementById('candidateLabel').textContent = name ? 'Candidate: ' + name : 'Assessment in progress';
-
-            document.getElementById('integrityPanel').style.display = 'block';
             document.getElementById('setupStep').style.display = 'none';
-            document.getElementById('examBox').style.display = 'block';
-            currentStage = 0;
-            isFollowUp = false;
-            interviewLog = [];
-            integrityLog = [];
-            tabSwitches = 0;
-            pasteEvents = 0;
-            responseTimes = [];
-            document.getElementById('tabCount').textContent = '0';
-            document.getElementById('pasteCount').textContent = '0';
-            document.getElementById('avgTime').textContent = '—';
-            document.getElementById('integrityStatus').textContent = 'CLEAN';
-            document.getElementById('integrityStatus').className = 'val clean';
-            buildProgress();
-            loadStage();
+            document.getElementById('personalStep').style.display = 'block';
 
         } catch (err) {
-            alert("Error generating questions: " + err.message);
-            document.getElementById('loadingGen').style.display = 'none';
+            alert("Error: " + err.message);
+            document.getElementById('loadingSetup').style.display = 'none';
             document.getElementById('generateBtn').disabled = false;
         }
+    }
+
+    // ── Generate Screening Questions ──────────────────────────────────────
+    async function generateScreeningQuestions(key, jd) {
+        const systemPrompt = `You are a senior HR professional. Based on this job description, generate exactly 5 screening questions to assess candidate fit BEFORE the interview.
+
+Rules:
+- Questions must be directly tied to specific requirements or qualifications in the JD
+- Mix of question types:
+  * "text" — open-ended, requires a written answer (e.g. "Describe your experience with...")
+  * "yesno" — binary yes/no question (e.g. "Do you have experience with LinkedIn Recruiter?")
+  * "number" — numeric answer (e.g. "How many years of experience do you have in Talent Acquisition?")
+- Use "text" for experience, projects, and complex topics
+- Use "yesno" only for factual binary questions (certifications, tools, availability)
+- Use "number" for years of experience questions
+- Keep questions concise and specific
+
+Return ONLY a raw JSON array, no markdown:
+[{"question": "...", "type": "text|yesno|number", "placeholder": "..."}, ...]`;
+
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: "JD:\n" + jd }
+                ],
+                temperature: 0.6
+            })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+        const content = data.choices[0].message.content;
+        const jsonStr = content.substring(content.indexOf('['), content.lastIndexOf(']') + 1);
+        return JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
+    }
+
+    // ── Generate Interview Cases ──────────────────────────────────────────
+    async function generateInterviewCases(key, jd) {
+        const systemPrompt = `You are a senior hiring manager conducting a structured interview. Analyze the job description and generate exactly 3 interview case questions.
+
+STRICT RULES:
+1. Reference a SPECIFIC responsibility or qualification from the JD
+2. MANDATORY: Every scenario must include AT LEAST 2 pressure elements:
+   - A specific dollar amount or financial impact
+   - A hard deadline creating urgency
+   - A named stakeholder with a clear stance
+   - A concrete number that raises stakes
+3. The scenario must make the candidate FEEL the pressure
+4. Match the seniority level in the JD exactly
+5. End every question with:
+   "This question tests:
+   • [skill 1]
+   • [skill 2]
+   • [skill 3]"
+
+Return ONLY a raw JSON array, no markdown:
+[{"title": "Phase 1: [label]", "question": "Full scenario...\\n\\nThis question tests:\\n• skill 1\\n• skill 2\\n• skill 3"}, ...]`;
+
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: "JD:\n" + jd }
+                ],
+                temperature: 0.7
+            })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+        const content = data.choices[0].message.content;
+        const jsonStr = content.substring(content.indexOf('['), content.lastIndexOf(']') + 1);
+        return JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
+    }
+
+    // ── Submit Personal Details ───────────────────────────────────────────
+    function submitPersonal() {
+        const name = document.getElementById('p_name').value.trim();
+        const email = document.getElementById('p_email').value.trim();
+        const city = document.getElementById('p_city').value.trim();
+        const experience = document.getElementById('p_experience').value;
+        if (!name || !email || !city || !experience) return alert("Please fill in all required fields.");
+
+        const relocation = document.querySelector('input[name="relocation"]:checked');
+
+        personalData = {
+            name,
+            email,
+            phone: document.getElementById('p_phone').value.trim(),
+            city,
+            experience,
+            currentRole: document.getElementById('p_role').value.trim(),
+            linkedin: document.getElementById('p_linkedin').value.trim(),
+            relocation: relocation ? relocation.value : 'Not specified'
+        };
+
+        // Render screening questions
+        renderScreeningQuestions();
+        document.getElementById('personalStep').style.display = 'none';
+        document.getElementById('screeningStep').style.display = 'block';
+        document.getElementById('integrityPanel').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── Render Screening Questions ────────────────────────────────────────
+    function renderScreeningQuestions() {
+        const container = document.getElementById('screeningQuestionsContainer');
+        container.innerHTML = screeningQuestions.map((q, i) => {
+            let inputHtml = '';
+            if (q.type === 'yesno') {
+                inputHtml = `
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="sq_${i}" value="Yes"> <span>Yes</span></label>
+                    <label class="radio-option"><input type="radio" name="sq_${i}" value="No"> <span>No</span></label>
+                </div>`;
+            } else if (q.type === 'number') {
+                inputHtml = `<input type="text" id="sq_${i}" placeholder="${q.placeholder || 'Enter number...'}" style="max-width:200px;">`;
+            } else {
+                inputHtml = `<textarea id="sq_${i}" rows="4" placeholder="${q.placeholder || 'Your answer...'}"></textarea>`;
+            }
+
+            return `
+            <div class="screening-q">
+                <div class="screening-q-type">${q.type === 'yesno' ? 'Yes / No' : q.type === 'number' ? 'Numeric' : 'Open Answer'}</div>
+                <div class="screening-q-text">${i + 1}. ${q.question}</div>
+                ${inputHtml}
+            </div>`;
+        }).join('');
+    }
+
+    // ── Submit Screening ──────────────────────────────────────────────────
+    function submitScreening() {
+        screeningLog = screeningQuestions.map((q, i) => {
+            let answer = '';
+            if (q.type === 'yesno') {
+                const checked = document.querySelector(`input[name="sq_${i}"]:checked`);
+                answer = checked ? checked.value : 'Not answered';
+            } else {
+                answer = document.getElementById(`sq_${i}`).value.trim() || 'Not answered';
+            }
+            return { question: q.question, type: q.type, answer };
+        });
+
+        // Start camera
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+            videoStream = stream;
+            document.getElementById('videoFeed').srcObject = stream;
+            document.getElementById('proctorContainer').style.display = 'block';
+        }).catch(() => {});
+
+        document.getElementById('candidateLabel').textContent = personalData.name ? 'Candidate: ' + personalData.name : 'Assessment in progress';
+        document.getElementById('screeningStep').style.display = 'none';
+        document.getElementById('examBox').style.display = 'block';
+        currentStage = 0;
+        isFollowUp = false;
+        interviewLog = [];
+        responseTimes = [];
+        buildProgress();
+        loadStage();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // ── Load Stage ────────────────────────────────────────────────────────
@@ -495,57 +777,39 @@ Return ONLY a raw JSON array, no markdown:
         const key = document.getElementById('apiKey').value;
         const jd = document.getElementById('jdInput').value;
 
-        const systemPrompt = `You are a senior hiring manager. The candidate just answered a case question.
-
-Generate ONE sharp follow-up that:
-- Challenges a SPECIFIC claim, assumption, or gap in their answer
-- Adds a NEW complication (new stakeholder, moved deadline, second problem emerging)
-- MUST include a concrete pressure element: number, deadline, dollar amount, or named person
-- Is 2-4 sentences maximum — sharp, not long
-- Tests: communication under pressure, prioritization, accountability, or stakeholder management
-
-BAD: "Can you elaborate on how you would communicate with stakeholders?"
-GOOD: "While you're investigating, the CFO calls you directly and demands a written incident report by 9 AM tomorrow. You haven't finished the investigation. What do you send her and what do you leave out?"
-
-Return ONLY JSON: {"title": "Follow-up: [short label]", "question": "..."}`;
-
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
                 messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: `JD:\n${jd}\n\nCase: ${caseTitle}\n\nCandidate answer:\n${answer}` }
+                    { role: "system", content: `You are a senior hiring manager. Generate ONE sharp follow-up question that:
+- Challenges a SPECIFIC claim or gap in the candidate's answer
+- Adds a NEW complication (new stakeholder, moved deadline, second problem)
+- Includes a concrete pressure element: number, deadline, dollar amount, or named person
+- Is 2-4 sentences maximum
+Return ONLY JSON: {"title": "Follow-up: [label]", "question": "..."}` },
+                    { role: "user", content: `JD:\n${jd}\n\nCase: ${caseTitle}\n\nAnswer:\n${answer}` }
                 ],
                 temperature: 0.6
             })
         });
-
         const data = await res.json();
         const content = data.choices[0].message.content;
         const jsonStr = content.substring(content.indexOf('{'), content.lastIndexOf('}') + 1);
-        const cleanJson = jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' ');
-        return JSON.parse(cleanJson);
+        return JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
     }
 
     // ── Process Step ──────────────────────────────────────────────────────
     async function processStep() {
         const ans = document.getElementById('userAnswer').value.trim();
-        if (!ans) return alert("Please enter a response before submitting.");
-
+        if (!ans) return alert("Please enter a response.");
         stopTimer();
         const btn = document.getElementById('submitBtn');
         btn.textContent = "Processing...";
         btn.disabled = true;
-
         const currentCase = dynamicCases[currentStage];
-        interviewLog.push({
-            phase: currentCase.title,
-            isFollowUp,
-            answer: ans,
-            responseTime: responseTimes[responseTimes.length - 1]
-        });
+        interviewLog.push({ phase: currentCase.title, isFollowUp, answer: ans, responseTime: responseTimes[responseTimes.length - 1] });
 
         if (!isFollowUp) {
             try {
@@ -579,48 +843,32 @@ Return ONLY JSON: {"title": "Follow-up: [short label]", "question": "..."}`;
 
         const key = document.getElementById('apiKey').value;
         const jd = document.getElementById('jdInput').value;
-        const candidateName = document.getElementById('candidateName').value.trim() || "Candidate";
         const integrityScore = Math.max(0, 100 - (tabSwitches * 25) - (pasteEvents * 20));
-        const avgResponseTime = responseTimes.length > 0
-            ? Math.floor(responseTimes.reduce((a,b) => a+b, 0) / responseTimes.length)
-            : 0;
+        const avgResponseTime = responseTimes.length > 0 ? Math.floor(responseTimes.reduce((a,b)=>a+b,0)/responseTimes.length) : 0;
         const suspiciouslyFast = responseTimes.filter(t => t < 30).length;
-        const integrityFlag = integrityLog.length > 0
-            ? integrityLog.map(e => e.type + " at " + e.time).join(", ")
-            : "None";
+        const integrityFlag = integrityLog.length > 0 ? integrityLog.map(e=>e.type+" at "+e.time).join(", ") : "None";
 
-        const systemPrompt = `You are a senior recruiter evaluating a candidate for this specific role.
-Analyze every answer and return ONLY a JSON object (no markdown):
+        const systemPrompt = `You are a senior recruiter. Evaluate this candidate holistically — personal background, screening answers, AND interview performance.
+Return ONLY JSON (no markdown):
 {
   "overall_score": <0-100>,
   "verdict": "STRONG HIRE" or "HIRE" or "HOLD" or "NO HIRE",
-  "summary": "<2-3 sentences referencing SPECIFIC things the candidate said>",
+  "summary": "<2-3 sentences referencing SPECIFIC things from their answers>",
+  "fit_summary": "<1-2 sentences on how their background fits the role requirements>",
   "scores": {
     "strategic_thinking": <0-100>,
     "communication": <0-100>,
     "cross_functional": <0-100>,
     "technical_depth": <0-100>
   },
-  "strengths": ["<specific thing they said>", "<strength 2>", "<strength 3>"],
+  "strengths": ["<specific strength>", "<strength 2>", "<strength 3>"],
   "gaps": ["<specific gap>", "<gap 2>"],
-  "recommendation": "<1 paragraph with actionable next steps referencing specific answers>"
+  "recommendation": "<1 paragraph with actionable next steps>"
 }
-
-CRITICAL INTEGRITY RULES — YOU MUST FOLLOW THESE:
-- Integrity score provided: ${integrityScore}/100
-- If integrity score < 50: overall_score CANNOT exceed 60, verdict MUST be "HOLD" or "NO HIRE"
-- If integrity score < 25: overall_score CANNOT exceed 40, verdict MUST be "NO HIRE"
-- Integrity issues MUST be explicitly mentioned in recommendation
-- Suspicious response times (${suspiciouslyFast} answers under 30 seconds) must also be flagged
-
-Scoring guide (for candidates with clean integrity):
-- 90-100: Exceptional, top 5%
-- 75-89: Strong hire
-- 60-74: Adequate, some gaps
-- 45-59: Borderline
-- Below 45: Not ready
-
-Be critical. Scores above 80 require specific evidence from their answers.`;
+INTEGRITY RULES:
+- If integrity < 50: overall CANNOT exceed 60, verdict MUST be "HOLD" or "NO HIRE"
+- If integrity < 25: overall CANNOT exceed 40, verdict MUST be "NO HIRE"
+- Integrity issues MUST be mentioned in recommendation`;
 
         try {
             const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -630,75 +878,58 @@ Be critical. Scores above 80 require specific evidence from their answers.`;
                     model: "gpt-3.5-turbo",
                     messages: [
                         { role: "system", content: systemPrompt },
-                        {
-                            role: "user",
-                            content: `JD:\n${jd}\n\nCandidate: ${candidateName}\nInterview transcript:\n${JSON.stringify(interviewLog, null, 2)}\n\nIntegrity events: ${integrityFlag}\nIntegrity score: ${integrityScore}/100\nAvg response time: ${avgResponseTime}s\nSuspiciously fast answers: ${suspiciouslyFast}`
-                        }
+                        { role: "user", content: `JD:\n${jd}\n\nCandidate: ${JSON.stringify(personalData)}\n\nScreening answers:\n${JSON.stringify(screeningLog, null, 2)}\n\nInterview transcript:\n${JSON.stringify(interviewLog, null, 2)}\n\nIntegrity events: ${integrityFlag}\nIntegrity score: ${integrityScore}/100\nAvg response time: ${avgResponseTime}s\nFast answers (<30s): ${suspiciouslyFast}` }
                     ],
                     temperature: 0.4
                 })
             });
-
             const data = await res.json();
             const content = data.choices[0].message.content;
             const jsonStr = content.substring(content.indexOf('{'), content.lastIndexOf('}') + 1);
-            const cleanJson = jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' ');
-            const report = JSON.parse(cleanJson);
+            const report = JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
 
-            // Store for comparison
             allCandidates.push({
-                name: candidateName,
+                name: personalData.name || 'Candidate',
                 verdict: report.verdict,
                 overall: report.overall_score,
                 scores: report.scores,
                 integrity: integrityScore,
                 avgTime: avgResponseTime,
-                summary: report.summary
+                city: personalData.city,
+                experience: personalData.experience
             });
 
-            renderReport(report, integrityScore, candidateName, avgResponseTime, suspiciouslyFast);
-
+            renderReport(report, integrityScore, avgResponseTime, suspiciouslyFast);
         } catch (err) {
-            document.getElementById('recruiterReport').innerHTML =
-                '<div class="card"><p style="color:var(--danger)">Report generation failed: ' + err.message + '</p></div>';
+            document.getElementById('recruiterReport').innerHTML = '<div style="color:var(--danger);padding:20px;">Report failed: ' + err.message + '</div>';
             document.getElementById('recruiterReport').style.display = 'block';
             document.getElementById('finalView').style.display = 'none';
         }
     }
 
     // ── Render Report ─────────────────────────────────────────────────────
-    function renderReport(r, integrityScore, candidateName, avgTime, fastAnswers) {
+    function renderReport(r, integrityScore, avgTime, fastAnswers) {
         document.getElementById('finalView').style.display = 'none';
-        const isPass = ["STRONG HIRE", "HIRE"].includes(r.verdict);
+        const isPass = ["STRONG HIRE","HIRE"].includes(r.verdict);
         const isWarn = r.verdict === "HOLD";
-        const scoreColor = (s) => s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--warn)' : 'var(--danger)';
+        const scoreColor = s => s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--warn)' : 'var(--danger)';
         const verdictClass = isPass ? 'pass' : isWarn ? 'warn' : 'fail';
         const allScores = { ...r.scores, integrity: integrityScore, overall: r.overall_score };
+        const avgM = Math.floor(avgTime/60), avgS = avgTime%60;
 
-        let integrityWarningHtml = '';
+        let integrityWarning = '';
         if (integrityScore < 50) {
-            integrityWarningHtml = `
-            <div class="integrity-warning">
-                ⚠️ <strong>Integrity Alert:</strong> This candidate triggered ${tabSwitches} tab switch(es) and ${pasteEvents > 0 ? pasteEvents + ' paste event(s)' : '0 paste events'}.
-                ${fastAnswers > 0 ? fastAnswers + ' answer(s) were submitted in under 30 seconds.' : ''}
-                Scores have been adjusted accordingly. Recommend in-person verification.
-            </div>`;
+            integrityWarning = `<div class="integrity-warning">⚠️ <strong>Integrity Alert:</strong> ${tabSwitches} tab switch(es), ${pasteEvents} paste event(s). ${fastAnswers > 0 ? fastAnswers + ' answer(s) under 30 seconds.' : ''} Scores adjusted. Recommend in-person verification.</div>`;
         }
-
-        const avgM = Math.floor(avgTime / 60);
-        const avgS = avgTime % 60;
 
         const html = `
         <div class="header">
             <div class="logo-mark">S</div>
-            <div class="header-text">
-                <h1>${candidateName}</h1>
-                <p>Assessment Report</p>
-            </div>
-            <div class="badge">V33</div>
+            <div class="header-text"><h1>${personalData.name || 'Candidate'}</h1><p>Assessment Report</p></div>
+            <div class="badge">V34</div>
         </div>
 
-        ${integrityWarningHtml}
+        ${integrityWarning}
 
         <div class="verdict-box ${verdictClass}">
             <div class="verdict-label">Hiring Recommendation</div>
@@ -706,19 +937,34 @@ Be critical. Scores above 80 require specific evidence from their answers.`;
         </div>
 
         <div class="report-section">
+            <h3>Candidate Profile</h3>
+            <div class="candidate-info-grid">
+                <div class="info-item"><div class="info-label">Name</div><div class="info-value">${personalData.name || '—'}</div></div>
+                <div class="info-item"><div class="info-label">Location</div><div class="info-value">${personalData.city || '—'}</div></div>
+                <div class="info-item"><div class="info-label">Experience</div><div class="info-value">${personalData.experience || '—'}</div></div>
+                <div class="info-item"><div class="info-label">Current Role</div><div class="info-value">${personalData.currentRole || '—'}</div></div>
+                <div class="info-item"><div class="info-label">Relocation</div><div class="info-value">${personalData.relocation || '—'}</div></div>
+                <div class="info-item"><div class="info-label">LinkedIn</div><div class="info-value">${personalData.linkedin ? '<a href="'+personalData.linkedin+'" target="_blank" style="color:var(--green)">View Profile</a>' : '—'}</div></div>
+            </div>
+        </div>
+
+        <div class="report-section">
+            <h3>Role Fit Summary</h3>
+            <p class="prose">${r.fit_summary || r.summary}</p>
+        </div>
+
+        <div class="report-section">
             <h3>Score Breakdown</h3>
             <div class="score-grid">
                 ${Object.entries(allScores).map(([key, val]) => `
                 <div class="score-item">
-                    <div class="label">${key.replace(/_/g, ' ')}</div>
+                    <div class="label">${key.replace(/_/g,' ')}</div>
                     <div class="score" style="color:${scoreColor(val)}">${val}<span>/100</span></div>
-                    <div class="score-bar-wrap">
-                        <div class="score-bar-fill" style="width:${val}%; background:${scoreColor(val)};"></div>
-                    </div>
+                    <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${val}%;background:${scoreColor(val)};"></div></div>
                 </div>`).join('')}
                 <div class="score-item">
                     <div class="label">Avg Response Time</div>
-                    <div class="score" style="color:var(--text-dim); font-size:20px;">${avgM}:${String(avgS).padStart(2,'0')}</div>
+                    <div class="score" style="color:var(--text-dim);font-size:20px;">${avgM}:${String(avgS).padStart(2,'0')}</div>
                 </div>
             </div>
         </div>
@@ -731,8 +977,8 @@ Be critical. Scores above 80 require specific evidence from their answers.`;
         <div class="report-section">
             <h3>Strengths & Gaps</h3>
             <div class="tag-list">
-                ${r.strengths.map(s => '<span class="tag strength">✓ ' + s + '</span>').join('')}
-                ${r.gaps.map(g => '<span class="tag weakness">✗ ' + g + '</span>').join('')}
+                ${r.strengths.map(s=>'<span class="tag strength">✓ '+s+'</span>').join('')}
+                ${r.gaps.map(g=>'<span class="tag weakness">✗ '+g+'</span>').join('')}
             </div>
         </div>
 
@@ -754,13 +1000,12 @@ Be critical. Scores above 80 require specific evidence from their answers.`;
 
     // ── Comparison ────────────────────────────────────────────────────────
     function renderComparison() {
-        const verdictClass = (v) => ["STRONG HIRE","HIRE"].includes(v) ? 'pass' : v === "HOLD" ? 'warn' : 'fail';
-        const scoreColor = (s) => s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--warn)' : 'var(--danger)';
-
-        let rows = allCandidates.map(c => `
+        const verdictClass = v => ["STRONG HIRE","HIRE"].includes(v) ? 'pass' : v === "HOLD" ? 'warn' : 'fail';
+        const scoreColor = s => s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--warn)' : 'var(--danger)';
+        const rows = allCandidates.map(c => `
         <tr>
-            <td><strong style="color:white">${c.name}</strong></td>
-            <td><span style="color:${scoreColor(c.overall)}; font-family:'Syne',sans-serif; font-weight:800;">${c.overall}</span></td>
+            <td><strong style="color:white">${c.name}</strong><br><span style="color:var(--text-dim);font-size:11px;">${c.city || ''} · ${c.experience || ''}</span></td>
+            <td><span style="color:${scoreColor(c.overall)};font-family:'Syne',sans-serif;font-weight:800;">${c.overall}</span></td>
             <td><span class="verdict-pill ${verdictClass(c.verdict)}">${c.verdict}</span></td>
             <td style="color:${scoreColor(c.scores.strategic_thinking)}">${c.scores.strategic_thinking}</td>
             <td style="color:${scoreColor(c.scores.technical_depth)}">${c.scores.technical_depth}</td>
@@ -770,19 +1015,12 @@ Be critical. Scores above 80 require specific evidence from their answers.`;
 
         document.getElementById('comparisonTable').innerHTML = `
         <div class="report-section">
-            <h3>${allCandidates.length} Candidate${allCandidates.length > 1 ? 's' : ''} Assessed</h3>
+            <h3>${allCandidates.length} Candidate${allCandidates.length>1?'s':''} Assessed</h3>
             <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>Candidate</th>
-                        <th>Overall</th>
-                        <th>Verdict</th>
-                        <th>Strategic</th>
-                        <th>Technical</th>
-                        <th>Communication</th>
-                        <th>Integrity</th>
-                    </tr>
-                </thead>
+                <thead><tr>
+                    <th>Candidate</th><th>Overall</th><th>Verdict</th>
+                    <th>Strategic</th><th>Technical</th><th>Communication</th><th>Integrity</th>
+                </tr></thead>
                 <tbody>${rows}</tbody>
             </table>
         </div>`;
@@ -790,25 +1028,26 @@ Be critical. Scores above 80 require specific evidence from their answers.`;
 
     // ── Restart ───────────────────────────────────────────────────────────
     function restartAssessment() {
-        dynamicCases = [];
-        currentStage = 0;
-        isFollowUp = false;
-        interviewLog = [];
-        integrityLog = [];
-        tabSwitches = 0;
-        pasteEvents = 0;
-        responseTimes = [];
+        dynamicCases = []; screeningQuestions = []; currentStage = 0; isFollowUp = false;
+        interviewLog = []; screeningLog = []; personalData = {};
+        integrityLog = []; tabSwitches = 0; pasteEvents = 0; responseTimes = [];
         if (timerInterval) clearInterval(timerInterval);
-
+        document.getElementById('tabCount').textContent = '0';
+        document.getElementById('pasteCount').textContent = '0';
+        document.getElementById('avgTime').textContent = '—';
+        document.getElementById('integrityStatus').textContent = 'CLEAN';
+        document.getElementById('integrityStatus').className = 'val clean';
+        document.getElementById('integrityStatus').style.color = '';
         document.getElementById('recruiterReport').style.display = 'none';
         document.getElementById('recruiterReport').innerHTML = '';
         document.getElementById('finalView').style.display = 'none';
-        document.getElementById('loadingGen').style.display = 'none';
+        document.getElementById('loadingSetup').style.display = 'none';
         document.getElementById('generateBtn').disabled = false;
-        document.getElementById('candidateName').value = '';
+        document.getElementById('apiKey').value = '';
         document.getElementById('jdInput').value = '';
         showSetup();
     }
 </script>
 </body>
 </html>
+
