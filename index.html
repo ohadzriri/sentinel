@@ -270,7 +270,7 @@
             <div class="badge">V34</div>
         </div>
         <div class="card">
-            <div class="card-label">OpenAI API Key</div>
+            
             <input type="password" id="apiKey" placeholder="sk-...">
         </div>
         <div class="card">
@@ -567,7 +567,7 @@
     async function startAssessment() {
         const key = document.getElementById('apiKey').value.trim();
         const jd = document.getElementById('jdInput').value.trim();
-        if (!key || !jd) return alert("Please provide both API Key and Job Description.");
+        if (!jd) return alert("Please provide both API Key and Job Description.");
 
         document.getElementById('loadingSetup').style.display = 'block';
         document.getElementById('generateBtn').disabled = true;
