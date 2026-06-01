@@ -270,7 +270,7 @@
             <div class="badge">V34</div>
         </div>
         <div class="card">
-            
+            <div class="card-label">OpenAI API Key</div>
             <input type="password" id="apiKey" placeholder="sk-...">
         </div>
         <div class="card">
@@ -567,7 +567,7 @@
     async function startAssessment() {
         const key = document.getElementById('apiKey').value.trim();
         const jd = document.getElementById('jdInput').value.trim();
-        if (!jd) return alert("Please provide both API Key and Job Description.");
+        if (!key || !jd) return alert("Please provide both API Key and Job Description.");
 
         document.getElementById('loadingSetup').style.display = 'block';
         document.getElementById('generateBtn').disabled = true;
@@ -596,23 +596,30 @@
     async function generateScreeningQuestions(key, jd) {
         const systemPrompt = `You are a senior HR professional. Based on this job description, generate exactly 5 screening questions to assess candidate fit BEFORE the interview.
 
-Rules:
-- Questions must be directly tied to specific requirements or qualifications in the JD
-- Mix of question types:
-  * "text" — open-ended, requires a written answer (e.g. "Describe your experience with...")
-  * "yesno" — binary yes/no question (e.g. "Do you have experience with LinkedIn Recruiter?")
-  * "number" — numeric answer (e.g. "How many years of experience do you have in Talent Acquisition?")
-- Use "text" for experience, projects, and complex topics
-- Use "yesno" only for factual binary questions (certifications, tools, availability)
-- Use "number" for years of experience questions
-- Keep questions concise and specific
+RULES:
+1. Questions must be directly tied to SPECIFIC requirements or qualifications in the JD
+2. AVOID shallow questions like "How many years of experience do you have in X?" — these tell us nothing about quality
+3. Instead, ask experience-based questions that reveal depth:
+   - "Describe a specific situation where you had to..."
+   - "Walk us through a project where you..."
+   - "Tell us about a time when you..."
+   - "What approach do you take when..."
+4. Only 2 types allowed:
+   * "text" — for ALL experience, skills, and situational questions (use this for 4 out of 5 questions)
+   * "yesno" — ONLY for hard factual requirements (e.g. "Do you have hands-on experience with GitHub/GitLab?", "Are you available for a fully remote role?")
+5. NEVER use "number" type — years of experience is shallow and irrelevant
+6. Each question should reveal something a CV cannot — judgment, approach, real experience
+7. Keep questions concise — one clear question, no sub-questions
+
+GOOD example: "Describe a situation where you had to drive product adoption for a customer who was resistant to change. What was your approach and what was the outcome?"
+BAD example: "How many years of CSM experience do you have?"
 
 Return ONLY a raw JSON array, no markdown:
-[{"question": "...", "type": "text|yesno|number", "placeholder": "..."}, ...]`;
+[{"question": "...", "type": "text|yesno", "placeholder": "Describe the situation, your actions, and the outcome..."}, ...]`;
 
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearersk-proj-h0bqlwUjUwA3OcyuQ-hN0zZqLv9yKroK4PCBh14IUk0tkU3LLolvaRBQ6ISJNExVBrEz2Dw3viT3BlbkFJyHun-4J8AP_CPo5GTuFhdGUyb2lPmstMOmJpIebb1xnhYht82NpNb0H9N2_ErlvOJJn9rnV6QA },
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
                 messages: [
@@ -653,7 +660,7 @@ Return ONLY a raw JSON array, no markdown:
 
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearersk-proj-h0bqlwUjUwA3OcyuQ-hN0zZqLv9yKroK4PCBh14IUk0tkU3LLolvaRBQ6ISJNExVBrEz2Dw3viT3BlbkFJyHun-4J8AP_CPo5GTuFhdGUyb2lPmstMOmJpIebb1xnhYht82NpNb0H9N2_ErlvOJJn9rnV6QA },
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
                 messages: [
@@ -779,7 +786,7 @@ Return ONLY a raw JSON array, no markdown:
 
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearersk-proj-h0bqlwUjUwA3OcyuQ-hN0zZqLv9yKroK4PCBh14IUk0tkU3LLolvaRBQ6ISJNExVBrEz2Dw3viT3BlbkFJyHun-4J8AP_CPo5GTuFhdGUyb2lPmstMOmJpIebb1xnhYht82NpNb0H9N2_ErlvOJJn9rnV6QA },
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
                 messages: [
@@ -873,7 +880,7 @@ INTEGRITY RULES:
         try {
             const res = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearersk-proj-h0bqlwUjUwA3OcyuQ-hN0zZqLv9yKroK4PCBh14IUk0tkU3LLolvaRBQ6ISJNExVBrEz2Dw3viT3BlbkFJyHun-4J8AP_CPo5GTuFhdGUyb2lPmstMOmJpIebb1xnhYht82NpNb0H9N2_ErlvOJJn9rnV6QA },
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
                 body: JSON.stringify({
                     model: "gpt-3.5-turbo",
                     messages: [
