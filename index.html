@@ -855,7 +855,35 @@ Return ONLY JSON: {"title": "Follow-up: [label]", "question": "..."}` },
         const suspiciouslyFast = responseTimes.filter(t => t < 30).length;
         const integrityFlag = integrityLog.length > 0 ? integrityLog.map(e=>e.type+" at "+e.time).join(", ") : "None";
 
+        // ── Local relevance/duplication check (does not rely on the LLM) ──
+        const answersOnly = interviewLog.map(e => (e.answer || '').trim().toLowerCase());
+        let duplicateCount = 0;
+        for (let i = 0; i < answersOnly.length; i++) {
+            for (let j = i + 1; j < answersOnly.length; j++) {
+                const a = answersOnly[i], b = answersOnly[j];
+                if (!a || !b) continue;
+                // Simple similarity: shared word overlap ratio
+                const wordsA = new Set(a.split(/\s+/).filter(w => w.length > 3));
+                const wordsB = new Set(b.split(/\s+/).filter(w => w.length > 3));
+                if (wordsA.size === 0 || wordsB.size === 0) continue;
+                const intersection = [...wordsA].filter(w => wordsB.has(w)).length;
+                const overlap = intersection / Math.min(wordsA.size, wordsB.size);
+                if (overlap > 0.7) duplicateCount++;
+            }
+        }
+        const hasDuplicateAnswers = duplicateCount > 0;
+
         const systemPrompt = `You are a senior recruiter. Evaluate this candidate holistically — personal background, screening answers, AND interview performance.
+
+CRITICAL — RELEVANCE CHECK (do this FIRST, before scoring anything):
+For EACH answer in the interview transcript, check whether it actually responds to ITS SPECIFIC question — not a different question, not a generic statement. A strong-sounding answer that is copy-pasted or reused across multiple unrelated questions is a SEVERE red flag, not a sign of competence. If you detect this pattern (the same or near-identical answer given to substantively different questions), you MUST:
+- Treat it as a major integrity and competence failure
+- Drop technical_depth and strategic_thinking scores sharply (below 40)
+- Explicitly call this out by name in "gaps" (e.g. "Gave the same answer to multiple unrelated questions, ignoring the specific scenario each time")
+- Cap overall_score at 35 and set verdict to "NO HIRE"
+
+Local duplication detector result (system-computed, treat as ground truth): ${hasDuplicateAnswers ? 'DUPLICATE/RECYCLED ANSWERS DETECTED across ' + duplicateCount + ' answer pair(s). Apply the rule above.' : 'No significant duplication detected.'}
+
 Return ONLY JSON (no markdown):
 {
   "overall_score": <0-100>,
@@ -872,6 +900,7 @@ Return ONLY JSON (no markdown):
   "gaps": ["<specific gap>", "<gap 2>"],
   "recommendation": "<1 paragraph with actionable next steps>"
 }
+
 INTEGRITY RULES:
 - If integrity < 50: overall CANNOT exceed 60, verdict MUST be "HOLD" or "NO HIRE"
 - If integrity < 25: overall CANNOT exceed 40, verdict MUST be "NO HIRE"
@@ -885,7 +914,7 @@ INTEGRITY RULES:
                     model: "gpt-3.5-turbo",
                     messages: [
                         { role: "system", content: systemPrompt },
-                        { role: "user", content: `JD:\n${jd}\n\nCandidate: ${JSON.stringify(personalData)}\n\nScreening answers:\n${JSON.stringify(screeningLog, null, 2)}\n\nInterview transcript:\n${JSON.stringify(interviewLog, null, 2)}\n\nIntegrity events: ${integrityFlag}\nIntegrity score: ${integrityScore}/100\nAvg response time: ${avgResponseTime}s\nFast answers (<30s): ${suspiciouslyFast}` }
+                        { role: "user", content: `JD:\n${jd}\n\nCandidate: ${JSON.stringify(personalData)}\n\nScreening answers:\n${JSON.stringify(screeningLog, null, 2)}\n\nInterview transcript (each entry includes the phase/question title and the candidate's answer):\n${JSON.stringify(interviewLog, null, 2)}\n\nIntegrity events: ${integrityFlag}\nIntegrity score: ${integrityScore}/100\nAvg response time: ${avgResponseTime}s\nFast answers (<30s): ${suspiciouslyFast}` }
                     ],
                     temperature: 0.4
                 })
@@ -893,7 +922,10 @@ INTEGRITY RULES:
             const data = await res.json();
             const content = data.choices[0].message.content;
             const jsonStr = content.substring(content.indexOf('{'), content.lastIndexOf('}') + 1);
-            const report = JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
+            let report = JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
+
+            // ── HARD-CODED ENFORCEMENT (does not rely on the LLM following instructions) ──
+            report = enforceScoreIntegrity(report, integrityScore, hasDuplicateAnswers);
 
             allCandidates.push({
                 name: personalData.name || 'Candidate',
@@ -903,10 +935,11 @@ INTEGRITY RULES:
                 integrity: integrityScore,
                 avgTime: avgResponseTime,
                 city: personalData.city,
-                experience: personalData.experience
+                experience: personalData.experience,
+                flaggedDuplicates: hasDuplicateAnswers
             });
 
-            renderReport(report, integrityScore, avgResponseTime, suspiciouslyFast);
+            renderReport(report, integrityScore, avgResponseTime, suspiciouslyFast, hasDuplicateAnswers);
         } catch (err) {
             document.getElementById('recruiterReport').innerHTML = '<div style="color:var(--danger);padding:20px;">Report failed: ' + err.message + '</div>';
             document.getElementById('recruiterReport').style.display = 'block';
@@ -914,8 +947,43 @@ INTEGRITY RULES:
         }
     }
 
+    // ── Hard-coded score enforcement (cannot be bypassed by the LLM) ───────
+    function enforceScoreIntegrity(report, integrityScore, hasDuplicateAnswers) {
+        let cappedNote = [];
+
+        if (hasDuplicateAnswers) {
+            report.overall_score = Math.min(report.overall_score, 35);
+            report.verdict = "NO HIRE";
+            report.scores.technical_depth = Math.min(report.scores.technical_depth, 35);
+            report.scores.strategic_thinking = Math.min(report.scores.strategic_thinking, 35);
+            if (!report.gaps.some(g => g.toLowerCase().includes('duplicate') || g.toLowerCase().includes('same answer') || g.toLowerCase().includes('recycled'))) {
+                report.gaps.unshift("Gave the same or near-identical answer across multiple unrelated questions — strong indicator of not engaging with each specific scenario.");
+            }
+            cappedNote.push("duplicate/recycled answers detected");
+        }
+
+        if (integrityScore < 25) {
+            report.overall_score = Math.min(report.overall_score, 40);
+            report.verdict = "NO HIRE";
+            cappedNote.push("integrity score critically low");
+        } else if (integrityScore < 50) {
+            report.overall_score = Math.min(report.overall_score, 60);
+            if (!["HOLD","NO HIRE"].includes(report.verdict)) report.verdict = "HOLD";
+            cappedNote.push("integrity score below threshold");
+        }
+
+        if (cappedNote.length > 0) {
+            const noteText = "Note: Score and verdict were automatically capped due to: " + cappedNote.join(", ") + ".";
+            if (!report.recommendation.includes("automatically capped")) {
+                report.recommendation = noteText + " " + report.recommendation;
+            }
+        }
+
+        return report;
+    }
+
     // ── Render Report ─────────────────────────────────────────────────────
-    function renderReport(r, integrityScore, avgTime, fastAnswers) {
+    function renderReport(r, integrityScore, avgTime, fastAnswers, hasDuplicateAnswers) {
         document.getElementById('finalView').style.display = 'none';
         const isPass = ["STRONG HIRE","HIRE"].includes(r.verdict);
         const isWarn = r.verdict === "HOLD";
@@ -926,7 +994,10 @@ INTEGRITY RULES:
 
         let integrityWarning = '';
         if (integrityScore < 50) {
-            integrityWarning = `<div class="integrity-warning">⚠️ <strong>Integrity Alert:</strong> ${tabSwitches} tab switch(es), ${pasteEvents} paste event(s). ${fastAnswers > 0 ? fastAnswers + ' answer(s) under 30 seconds.' : ''} Scores adjusted. Recommend in-person verification.</div>`;
+            integrityWarning += `<div class="integrity-warning">⚠️ <strong>Integrity Alert:</strong> ${tabSwitches} tab switch(es), ${pasteEvents} paste event(s). ${fastAnswers > 0 ? fastAnswers + ' answer(s) under 30 seconds.' : ''} Scores adjusted. Recommend in-person verification.</div>`;
+        }
+        if (hasDuplicateAnswers) {
+            integrityWarning += `<div class="integrity-warning">⚠️ <strong>Duplicate Answer Alert:</strong> The candidate submitted the same or near-identical answer to multiple, substantively different questions. This is treated as a critical reliability failure — score and verdict were capped automatically. Recommend disqualifying this assessment and re-running it live with the candidate.</div>`;
         }
 
         const html = `
