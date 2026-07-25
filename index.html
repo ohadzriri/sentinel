@@ -4,22 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel V34 — AI Interview Auditor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Sentinel V45 — AI Interview Auditor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --green: #00ff87;
-            --green-dim: #00c86a;
-            --bg: #080c0a;
-            --surface: #0f1611;
-            --surface2: #161d18;
-            --border: #1e2b21;
-            --text: #d4e8d8;
-            --text-dim: #6b8a70;
-            --warn: #ffbe00;
-            --danger: #ff4455;
-            --mono: 'DM Mono', monospace;
-            --display: 'Syne', sans-serif;
+            --green: #34d399;
+            --green-dim: #10b981;
+            --bg: #111318;
+            --surface: #1c1f26;
+            --surface2: #22262f;
+            --border: #2e3340;
+            --text: #e2e8f0;
+            --text-dim: #7c8a9e;
+            --warn: #f59e0b;
+            --danger: #f43f5e;
+            --blue: #3b82f6;
+            --mono: 'Inter', sans-serif;
+            --display: 'Inter', sans-serif;
+            --radius: 12px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -28,9 +30,6 @@
             font-family: var(--mono);
             min-height: 100vh;
             padding: 40px 20px;
-            background-image:
-                radial-gradient(ellipse 60% 40% at 80% 10%, rgba(0,255,135,0.04) 0%, transparent 60%),
-                radial-gradient(ellipse 40% 60% at 10% 90%, rgba(0,255,135,0.03) 0%, transparent 60%);
         }
         .wrapper { max-width: 900px; margin: 0 auto; }
 
@@ -211,6 +210,7 @@
         #finalView p { color: var(--text-dim); font-size: 13px; margin-bottom: 28px; }
 
         .integrity-warning { background: rgba(255,68,85,0.08); border: 1px solid rgba(255,68,85,0.3); border-radius: 10px; padding: 16px; margin-bottom: 12px; font-size: 13px; color: var(--danger); }
+
     </style>
 </head>
 <body>
@@ -267,17 +267,147 @@
         <div class="header">
             <div class="logo-mark">S</div>
             <div class="header-text"><h1>Sentinel Auditor</h1><p>HR Setup</p></div>
-            <div class="badge">V34</div>
+            <div class="badge">V45</div>
         </div>
         <div class="card">
-            <div class="card-label">OpenAI API Key</div>
+            <div class="card-label">OpenAI API Key
+                
+            </div>
             <input type="password" id="apiKey" placeholder="sk-...">
         </div>
         <div class="card">
-            <div class="card-label">Job Description</div>
+            <div class="card-label">Company Name
+                
+                <span style="color:var(--text-dim);font-size:11px;">(optional — improves question relevance)</span>
+            </div>
+            <input type="text" id="companyName" placeholder="e.g. MongoDB, Wix, Salesforce...">
+        </div>
+        <div class="card">
+            <div class="card-label">Job Description
+                
+            </div>
             <textarea id="jdInput" rows="10" placeholder="Paste the full job description here..."></textarea>
         </div>
-        <button class="btn" id="generateBtn" onclick="startAssessment()">Generate Assessment →</button>
+        <div class="card">
+            <div class="card-label">Assessment Settings</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:4px;">
+                <div>
+                    <p style="font-size:11px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Number of Questions</p>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="radio" name="questionCount" value="1" style="accent-color:var(--green);width:auto;">
+                            <span style="font-size:13px;color:var(--text);">1 + 1 follow-up <span style="color:var(--text-dim);font-size:11px;">(quick test)</span></span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="radio" name="questionCount" value="2" style="accent-color:var(--green);width:auto;">
+                            <span style="font-size:13px;color:var(--text);">2 + 2 follow-ups <span style="color:var(--text-dim);font-size:11px;">(fast)</span></span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="radio" name="questionCount" value="3" checked style="accent-color:var(--green);width:auto;">
+                            <span style="font-size:13px;color:var(--text);">3 + 3 follow-ups <span style="color:var(--text-dim);font-size:11px;">(standard)</span></span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="radio" name="questionCount" value="5" style="accent-color:var(--green);width:auto;">
+                            <span style="font-size:13px;color:var(--text);">5 + 5 follow-ups <span style="color:var(--text-dim);font-size:11px;">(thorough)</span></span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <p style="font-size:11px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Depth Level
+                        
+                    </p>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="radio" name="depthLevel" value="screening" checked style="accent-color:var(--green);width:auto;">
+                            <div>
+                                <p style="font-size:13px;color:var(--text);margin:0;">Screening</p>
+                                <p style="font-size:11px;color:var(--text-dim);margin:0;">Framework & thinking</p>
+                            </div>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="radio" name="depthLevel" value="indepth" style="accent-color:var(--green);width:auto;">
+                            <div>
+                                <p style="font-size:13px;color:var(--text);margin:0;">In-depth</p>
+                                <p style="font-size:11px;color:var(--text-dim);margin:0;">Technical & domain expertise</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <p style="font-size:11px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Integrity Policy
+                        
+                    </p>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="radio" name="integrityWeight" value="strict" checked style="accent-color:var(--green);width:auto;">
+                            <div>
+                                <p style="font-size:13px;color:var(--text);margin:0;">Strict</p>
+                                <p style="font-size:11px;color:var(--text-dim);margin:0;">AI use = disqualified</p>
+                            </div>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="radio" name="integrityWeight" value="moderate" style="accent-color:var(--green);width:auto;">
+                            <div>
+                                <p style="font-size:13px;color:var(--text);margin:0;">Moderate</p>
+                                <p style="font-size:11px;color:var(--text-dim);margin:0;">AI use lowers score</p>
+                            </div>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                            <input type="radio" name="integrityWeight" value="open" style="accent-color:var(--green);width:auto;">
+                            <div>
+                                <p style="font-size:13px;color:var(--text);margin:0;">Open</p>
+                                <p style="font-size:11px;color:var(--text-dim);margin:0;">AI use is acceptable</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn" id="generateBtn" onclick="startAssessment()">Generate New Questions →</button>
+        <button class="btn btn-ghost" id="reuseBtn" onclick="reuseLastQuestions()" style="margin-top:8px;display:none;">🔁 Use Same Questions as Last Session</button>
+
+        <!-- Category weights — always visible, updated by AI after JD analysis -->
+        <div id="weightsPanel" style="margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <p style="font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;">Score Weights
+                    
+                    <span style="color:var(--text-dim);font-size:10px;" id="weightsNote">(default — will update after JD analysis)</span>
+                </p>
+                <span id="weightsTotal" style="font-size:13px;font-weight:600;color:var(--green);">100%</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                        <label style="font-size:12px;color:var(--text);">Technical Depth</label>
+                        <span id="w_technical_label" style="font-size:12px;color:var(--green);font-weight:600;">35%</span>
+                    </div>
+                    <input type="range" id="w_technical" min="0" max="100" value="35" oninput="updateWeights('w_technical')" style="width:100%;accent-color:var(--green);">
+                </div>
+                <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                        <label style="font-size:12px;color:var(--text);">Strategic Thinking</label>
+                        <span id="w_strategic_label" style="font-size:12px;color:var(--green);font-weight:600;">30%</span>
+                    </div>
+                    <input type="range" id="w_strategic" min="0" max="100" value="30" oninput="updateWeights('w_strategic')" style="width:100%;accent-color:var(--green);">
+                </div>
+                <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                        <label style="font-size:12px;color:var(--text);">Communication</label>
+                        <span id="w_communication_label" style="font-size:12px;color:var(--green);font-weight:600;">25%</span>
+                    </div>
+                    <input type="range" id="w_communication" min="0" max="100" value="25" oninput="updateWeights('w_communication')" style="width:100%;accent-color:var(--green);">
+                </div>
+                <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                        <label style="font-size:12px;color:var(--text);">Cross-Functional</label>
+                        <span id="w_cross_label" style="font-size:12px;color:var(--green);font-weight:600;">10%</span>
+                    </div>
+                    <input type="range" id="w_cross" min="0" max="100" value="10" oninput="updateWeights('w_cross')" style="width:100%;accent-color:var(--green);">
+                </div>
+            </div>
+            <p id="weightsWarning" style="display:none;font-size:11px;color:var(--danger);margin-top:10px;">⚠️ Weights must total 100% before starting</p>
+        </div>
+
         <button class="btn btn-ghost" onclick="showComparison()" style="margin-top:8px;">📊 View Candidate Comparison</button>
         <div class="loading-text" id="loadingSetup">
             Analyzing JD — generating screening questions...
@@ -290,7 +420,7 @@
         <div class="header">
             <div class="logo-mark">S</div>
             <div class="header-text"><h1>Sentinel Auditor</h1><p>Step 1 of 3 — Personal Details</p></div>
-            <div class="badge">V34</div>
+            <div class="badge">V45</div>
         </div>
 
         <div class="step-indicator">
@@ -368,7 +498,7 @@
         <div class="header">
             <div class="logo-mark">S</div>
             <div class="header-text"><h1>Sentinel Auditor</h1><p>Step 2 of 3 — Role Fit Screening</p></div>
-            <div class="badge">V34</div>
+            <div class="badge">V45</div>
         </div>
 
         <div class="step-indicator">
@@ -403,7 +533,7 @@
         <div class="header">
             <div class="logo-mark">S</div>
             <div class="header-text"><h1>Sentinel Auditor</h1><p id="candidateLabel">Step 3 of 3 — Interview</p></div>
-            <div class="badge">V34</div>
+            <div class="badge">V45</div>
         </div>
 
         <div class="step-indicator">
@@ -456,13 +586,52 @@
     <div id="comparisonView" style="display:none;">
         <div class="header">
             <div class="logo-mark">S</div>
-            <div class="header-text"><h1>Candidate Comparison</h1><p>All assessments this session</p></div>
-            <div class="badge">V34</div>
+            <div class="header-text"><h1>Candidate Comparison</h1><p>All saved assessments</p></div>
+            <div class="badge">V45</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end;">
+                <div>
+                    <p style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Filter by Verdict</p>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <button onclick="setVerdictFilter('all')" id="f_all" style="padding:5px 12px;border-radius:20px;border:1px solid var(--green);background:rgba(52,211,153,0.1);color:var(--green);font-size:11px;cursor:pointer;">All</button>
+                        <button onclick="setVerdictFilter('STRONG HIRE')" id="f_sh" style="padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:11px;cursor:pointer;">Strong Hire</button>
+                        <button onclick="setVerdictFilter('HIRE')" id="f_h" style="padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:11px;cursor:pointer;">Hire</button>
+                        <button onclick="setVerdictFilter('HOLD')" id="f_ho" style="padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:11px;cursor:pointer;">Hold</button>
+                        <button onclick="setVerdictFilter('NO HIRE')" id="f_nh" style="padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:11px;cursor:pointer;">No Hire</button>
+                    </div>
+                </div>
+                <div>
+                    <p style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Min Overall Score: <span id="scoreThresholdLabel">0</span></p>
+                    <input type="range" min="0" max="100" value="0" id="scoreThreshold" oninput="setScoreFilter(this.value)" style="width:100%;accent-color:var(--green);">
+                </div>
+                <div>
+                    <button onclick="clearAllCandidates()" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(244,63,94,0.3);background:transparent;color:var(--danger);font-size:12px;cursor:pointer;">🗑 Clear All</button>
+                </div>
+            </div>
         </div>
         <div id="comparisonTable"></div>
+        <div id="compareSelectedBar" style="display:none;margin-top:12px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:12px;">
+            <span id="selectedCount" style="font-size:13px;color:var(--text-dim);">0 selected</span>
+            <button onclick="runAIComparison()" style="padding:10px 24px;background:var(--green-dim);border:none;border-radius:8px;color:white;font-size:13px;font-weight:600;cursor:pointer;">🤖 Compare Selected Candidates</button>
+        </div>
+        <div id="aiComparisonResult" style="display:none;margin-top:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;">
+            <p style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">AI Candidate Comparison</p>
+            <div id="aiComparisonText" style="font-size:14px;color:var(--text);line-height:1.8;"></div>
+        </div>
         <button class="btn btn-ghost" onclick="showSetup()" style="margin-top:8px;">← Back to Setup</button>
     </div>
 
+</div>
+
+<!-- WARNING MODAL -->
+<div id="warningModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:#1c1f26;border:1px solid #2e3340;border-radius:16px;padding:32px;max-width:480px;width:90%;margin:20px;">
+        <div style="font-size:36px;margin-bottom:16px;text-align:center;" id="modalIcon">⚠️</div>
+        <h3 style="font-family:Inter,sans-serif;font-weight:700;font-size:18px;color:#e2e8f0;margin-bottom:12px;text-align:center;" id="modalTitle">Warning</h3>
+        <p style="font-size:14px;color:#7c8a9e;line-height:1.8;margin-bottom:24px;text-align:center;" id="modalMessage"></p>
+        <div style="display:grid;gap:10px;" id="modalButtons"></div>
+    </div>
 </div>
 
 <script>
@@ -481,6 +650,67 @@
     let responseTimes = [];
     let timerInterval = null;
     let allCandidates = [];
+    // Load saved candidates from localStorage
+    try {
+        const saved = localStorage.getItem('sentinel_candidates');
+        if (saved) allCandidates = JSON.parse(saved);
+    } catch(e) { allCandidates = []; }
+
+    // Show reuse button if saved questions exist
+    try {
+        const savedQ = localStorage.getItem('sentinel_last_questions');
+        if (savedQ) {
+            const btn = document.getElementById('reuseBtn');
+            if (btn) btn.style.display = 'block';
+        }
+    } catch(e) {}
+    let warningLog = []; // tracks warnings shown and candidate responses
+    let tabWarningShown = false;
+    let pasteWarningShown = false;  // only warn once for paste
+    let shortAnswerWarningShown = false;  // only warn once for short answers
+    let gibberishWarningShown = false;  // only warn once for gibberish
+    let gibberishCount = 0;  // terminate after 2
+
+    // ── Gibberish / invalid answer detection ─────────────────────────────
+    function isInvalidAnswer(text) {
+        const t = text.trim();
+
+        // Empty or too short
+        if (t.length < 3) return true;
+
+        // Hebrew characters only — if the MAJORITY of characters are Hebrew
+        const hebrewChars = (t.match(/[\u0590-\u05FF]/g) || []).length;
+        if (hebrewChars > t.length * 0.5) return true;
+
+        // Repeating same character 8+ times in a row (aaaaaaaa, 11111111)
+        if (/(.)\1{7,}/.test(t)) return true;
+
+        // No letters at all (numbers/symbols only, no real words)
+        if (!/[a-zA-Z]/.test(t)) return true;
+
+        return false;
+    }
+
+    // ── Modal ─────────────────────────────────────────────────────────────
+    function showModal(icon, title, message, buttons) {
+        document.getElementById('modalIcon').textContent = icon;
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMessage').textContent = message;
+        const btnContainer = document.getElementById('modalButtons');
+        btnContainer.innerHTML = '';
+        buttons.forEach(b => {
+            const el = document.createElement('button');
+            el.textContent = b.label;
+            el.style.cssText = `width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:Inter,sans-serif;background:${b.primary?'#10b981':'transparent'};color:${b.primary?'#fff':'#7c8a9e'};border:1px solid ${b.primary?'#10b981':'#2e3340'};`;
+            el.onclick = () => { hideModal(); b.action(); };
+            btnContainer.appendChild(el);
+        });
+        document.getElementById('warningModal').style.display = 'flex';
+    }
+
+    function hideModal() {
+        document.getElementById('warningModal').style.display = 'none';
+    }
 
     // ── Navigation ────────────────────────────────────────────────────────
     function showSetup() {
@@ -491,6 +721,10 @@
     }
 
     function showComparison() {
+        try {
+            const saved = localStorage.getItem('sentinel_candidates');
+            if (saved) allCandidates = JSON.parse(saved);
+        } catch(e) {}
         if (allCandidates.length === 0) { alert("No completed assessments yet."); return; }
         renderComparison();
         document.getElementById('setupStep').style.display = 'none';
@@ -506,10 +740,19 @@
             integrityLog.push({ type: "Tab Switch", time: new Date().toLocaleTimeString() });
             document.getElementById('tabCount').textContent = tabSwitches;
             updateIntegrityStatus();
+        } else if (!document.hidden && examVisible && tabSwitches >= 2 && !tabWarningShown) {
+            tabWarningShown = true;
+            warningLog.push({ type: 'Tab warning shown', count: tabSwitches, time: new Date().toLocaleTimeString() });
+            showModal('🚨', 'Multiple Tab Switches Detected',
+                'You have switched away from this assessment ' + tabSwitches + ' times. This is being recorded. Please stay on this page for the remainder of the assessment. Further tab switches will impact your integrity score.',
+                [{ label: 'I understand — continue assessment', primary: true, action: () => {
+                    warningLog.push({ type: 'Tab warning acknowledged', time: new Date().toLocaleTimeString() });
+                }}]
+            );
         }
     });
 
-    document.addEventListener("paste", () => {
+    document.addEventListener("paste", (e) => {
         const examVisible = document.getElementById('examBox').style.display === 'block' ||
                            document.getElementById('screeningStep').style.display === 'block';
         if (examVisible) {
@@ -517,6 +760,28 @@
             integrityLog.push({ type: "Paste Event", time: new Date().toLocaleTimeString() });
             document.getElementById('pasteCount').textContent = pasteEvents;
             updateIntegrityStatus();
+
+            // Warn on first paste during interview — once only
+            if (document.getElementById('examBox').style.display === 'block' && !pasteWarningShown) {
+                pasteWarningShown = true;
+                warningLog.push({ type: 'Paste warning shown', question: currentStage, time: new Date().toLocaleTimeString() });
+
+                setTimeout(() => {
+                    showModal('📋', 'Paste Detected',
+                        'We noticed you pasted text into your answer. This assessment is designed to evaluate your own thinking and experience. Would you like to clear your answer and retype it? This is your opportunity to provide an original response.',
+                        [
+                            { label: '✏️ Clear and retype my answer', primary: true, action: () => {
+                                document.getElementById('userAnswer').value = '';
+                                document.getElementById('userAnswer').focus();
+                                warningLog.push({ type: 'Chose to retype', question: currentStage, time: new Date().toLocaleTimeString() });
+                            }},
+                            { label: 'Keep my pasted answer', primary: false, action: () => {
+                                warningLog.push({ type: 'Chose to keep paste', question: currentStage, time: new Date().toLocaleTimeString() });
+                            }}
+                        ]
+                    );
+                }, 300);
+            }
         }
     });
 
@@ -563,32 +828,190 @@
         }
     }
 
+    // ── Category weights ──────────────────────────────────────────────────
+    function updateWeights(changedId) {
+        const ids = ['w_technical', 'w_strategic', 'w_communication', 'w_cross'];
+        const labelIds = ['w_technical_label', 'w_strategic_label', 'w_communication_label', 'w_cross_label'];
+
+        if (changedId) {
+            // Calculate sum of all others
+            const others = ids.filter(id => id !== changedId);
+            const changedVal = parseInt(document.getElementById(changedId).value);
+            const othersSum = others.reduce((sum, id) => sum + parseInt(document.getElementById(id).value), 0);
+
+            // If total exceeds 100, cap the changed slider
+            if (changedVal + othersSum > 100) {
+                const maxAllowed = 100 - othersSum;
+                document.getElementById(changedId).value = Math.max(0, maxAllowed);
+            }
+        }
+
+        const vals = ids.map(id => parseInt(document.getElementById(id).value));
+        const total = vals.reduce((a, b) => a + b, 0);
+
+        vals.forEach((v, i) => {
+            document.getElementById(labelIds[i]).textContent = v + '%';
+        });
+        document.getElementById('weightsTotal').textContent = total + '%';
+        document.getElementById('weightsTotal').style.color = total === 100 ? 'var(--green)' : 'var(--danger)';
+        document.getElementById('weightsWarning').style.display = total !== 100 ? 'block' : 'none';
+    }
+
+    function getWeights() {
+        return {
+            technical: parseInt(document.getElementById('w_technical').value) / 100,
+            strategic: parseInt(document.getElementById('w_strategic').value) / 100,
+            communication: parseInt(document.getElementById('w_communication').value) / 100,
+            cross: parseInt(document.getElementById('w_cross').value) / 100
+        };
+    }
+
+    function applyWeightsToScore(scores) {
+        const w = getWeights();
+        const total = w.technical + w.strategic + w.communication + w.cross;
+        if (Math.abs(total - 1) > 0.05) return null; // weights don't sum to 100%
+        return Math.round(
+            (scores.technical_depth * w.technical) +
+            (scores.strategic_thinking * w.strategic) +
+            (scores.communication * w.communication) +
+            (scores.cross_functional * w.cross)
+        );
+    }
+
+    async function generateWeightsFromJD(key, jd) {
+        try {
+            const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [{
+                        role: "system",
+                        content: "You analyze job descriptions and suggest scoring weights. Return ONLY valid JSON, no markdown: {\"technical\": <0-100>, \"strategic\": <0-100>, \"communication\": <0-100>, \"cross\": <0-100>}. The four values must sum to exactly 100. Base weights on how critical each dimension is for this specific role."
+                    }, {
+                        role: "user",
+                        content: `Analyze this job description and suggest percentage weights for these 4 scoring categories:\n- technical: technical/domain expertise importance\n- strategic: strategic thinking and planning importance\n- communication: communication and stakeholder management importance\n- cross: cross-functional collaboration importance\n\nJD:\n${jd.substring(0, 1500)}`
+                    }],
+                    temperature: 0.3
+                })
+            });
+            const data = await res.json();
+            const text = data.choices[0].message.content;
+            const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+            // Normalize to ensure sum = 100
+            const sum = json.technical + json.strategic + json.communication + json.cross;
+            return {
+                technical: Math.round(json.technical * 100 / sum),
+                strategic: Math.round(json.strategic * 100 / sum),
+                communication: Math.round(json.communication * 100 / sum),
+                cross: Math.round(json.cross * 100 / sum)
+            };
+        } catch(e) {
+            return { technical: 35, strategic: 30, communication: 25, cross: 10 };
+        }
+    }
+
     // ── Start Assessment ──────────────────────────────────────────────────
     async function startAssessment() {
-        const key = document.getElementById('apiKey').value.trim();
+        const key = document.getElementById('apiKey').value.trim();proj-IH5KjAkOKJh7yH-McPlJVZNwTATXHelHK0faFZpxI0b91vKD48TtkmYyFSXOgxI7dvIfHDWztYT3BlbkFJfj4D4iUvxbzeO59TYtHwOu";
         const jd = document.getElementById('jdInput').value.trim();
+        const companyName = document.getElementById('companyName').value.trim();
+        const questionCount = document.querySelector('input[name="questionCount"]:checked')?.value || '3';
+        const depthLevel = document.querySelector('input[name="depthLevel"]:checked')?.value || 'screening';
+        const integrityWeight = document.querySelector('input[name="integrityWeight"]:checked')?.value || 'strict';
+
         if (!key || !jd) return alert("Please provide both API Key and Job Description.");
+
+        // Validate weights sum to 100
+        const w = getWeights();
+        const wTotal = Math.round((w.technical + w.strategic + w.communication + w.cross) * 100);
+        if (wTotal !== 100) return alert("Score weights must total 100% before starting.");
 
         document.getElementById('loadingSetup').style.display = 'block';
         document.getElementById('generateBtn').disabled = true;
 
-        // Generate both screening questions AND interview cases in parallel
+        window.sentinelConfig = { companyName, questionCount: parseInt(questionCount), depthLevel, integrityWeight };
+
         try {
-            const [screeningRes, casesRes] = await Promise.all([
+            const [screeningRes, casesRes, weightsRes] = await Promise.all([
                 generateScreeningQuestions(key, jd),
-                generateInterviewCases(key, jd)
+                generateInterviewCases(key, jd),
+                generateWeightsFromJD(key, jd)
             ]);
 
             screeningQuestions = screeningRes;
             dynamicCases = casesRes;
 
-            document.getElementById('setupStep').style.display = 'none';
-            document.getElementById('personalStep').style.display = 'block';
+            // Apply AI-suggested weights to sliders
+            document.getElementById('w_technical').value = weightsRes.technical;
+            document.getElementById('w_strategic').value = weightsRes.strategic;
+            document.getElementById('w_communication').value = weightsRes.communication;
+            document.getElementById('w_cross').value = weightsRes.cross;
+            updateWeights();
+            const noteEl = document.getElementById('weightsNote');
+            if (noteEl) noteEl.textContent = '(AI suggested for this role — adjust as needed)';
+
+            // Save questions for reuse
+            try {
+                localStorage.setItem('sentinel_last_questions', JSON.stringify({
+                    screening: screeningQuestions,
+                    cases: dynamicCases,
+                    jd: jd,
+                    date: new Date().toLocaleDateString(),
+                    weights: weightsRes
+                }));
+                const btn = document.getElementById('reuseBtn');
+                if (btn) btn.style.display = 'block';
+            } catch(e) {}
+
+            document.getElementById('loadingSetup').style.display = 'none';
+            document.getElementById('generateBtn').disabled = false;
+
+            // Show weights panel — HR can adjust then click Start
+            document.getElementById('generateBtn').textContent = '✓ Weights set — Start Assessment →';
+            document.getElementById('generateBtn').onclick = function() {
+                const wNow = getWeights();
+                const total = Math.round((wNow.technical + wNow.strategic + wNow.communication + wNow.cross) * 100);
+                if (total !== 100) return alert("Weights must total 100%.");
+                window.sentinelConfig.weights = wNow;
+                document.getElementById('setupStep').style.display = 'none';
+                document.getElementById('personalStep').style.display = 'block';
+                document.getElementById('generateBtn').textContent = 'Generate New Questions →';
+                document.getElementById('generateBtn').onclick = startAssessment;
+            };
 
         } catch (err) {
             alert("Error: " + err.message);
             document.getElementById('loadingSetup').style.display = 'none';
             document.getElementById('generateBtn').disabled = false;
+        }
+    }
+
+    // ── Reuse last session questions ──────────────────────────────────────
+    function reuseLastQuestions() {
+        const key = document.getElementById('apiKey').value.trim();proj-IH5KjAkOKJh7yH-McPlJVZNwTATXHelHK0faFZpxI0b91vKD48TtkmYyFSXOgxI7dvIfHDWztYT3BlbkFJfj4D4iUvxbzeO59TYtHwOu";
+        if (!key) return alert("Please enter your API key first.");
+
+        try {
+            const saved = localStorage.getItem('sentinel_last_questions');
+            if (!saved) return alert("No saved questions found.");
+
+            const data = JSON.parse(saved);
+            screeningQuestions = data.screening;
+            dynamicCases = data.cases;
+
+            // Store config
+            const companyName = document.getElementById('companyName').value.trim();
+            const questionCount = document.querySelector('input[name="questionCount"]:checked')?.value || '3';
+            const depthLevel = document.querySelector('input[name="depthLevel"]:checked')?.value || 'screening';
+            const integrityWeight = document.querySelector('input[name="integrityWeight"]:checked')?.value || 'strict';
+            window.sentinelConfig = { companyName, questionCount: parseInt(questionCount), depthLevel, integrityWeight };
+
+            document.getElementById('setupStep').style.display = 'none';
+            document.getElementById('personalStep').style.display = 'block';
+
+        } catch(e) {
+            alert("Error loading saved questions: " + e.message);
         }
     }
 
@@ -638,7 +1061,35 @@ Return ONLY a raw JSON array, no markdown:
 
     // ── Generate Interview Cases ──────────────────────────────────────────
     async function generateInterviewCases(key, jd) {
-        const systemPrompt = `You are a senior hiring manager conducting a structured interview. Analyze the job description and generate exactly 3 interview case questions.
+        const cfg = window.sentinelConfig || { companyName: '', questionCount: 3, depthLevel: 'screening' };
+        const { companyName, questionCount, depthLevel } = cfg;
+
+        const companyContext = companyName
+            ? `\n\nCOMPANY CONTEXT: The role is at "${companyName}". Use your knowledge about this company — its industry, products, customers, business model, and culture — to make scenarios feel authentic to THIS company specifically. A CSM at Wix deals with SMB website owners. A CSM at MongoDB deals with enterprise database infrastructure. A sales rep at Salesforce deals with CRM adoption. Tailor every scenario accordingly.`
+            : '';
+
+        const depthInstruction = depthLevel === 'indepth'
+            ? `\nDEPTH LEVEL — IN-DEPTH: Questions must test deep domain knowledge and technical expertise specific to this role and industry. Generic crisis management questions are NOT acceptable at this level.
+
+CRITICAL — USE YOUR KNOWLEDGE BEYOND THE JD:
+The JD describes the role at a high level. You must go deeper. Use your knowledge of what this role ACTUALLY involves day-to-day — the specific tools, systems, errors, metrics, and decisions a person in this role encounters in real life. Do not limit yourself to what is explicitly written in the JD. A MongoDB CSM deals with WiredTiger, oplog windows, shard keys, Atlas Performance Advisor — even if the JD does not mention these. A Salesforce admin deals with SOQL, governor limits, flow builder — even if the JD does not mention these. Inject this real-world specificity into every scenario.
+
+MANDATORY for in-depth questions:
+- Name at least 2 specific technical components, tools, commands, or metrics that someone in this role would actually use
+- The scenario must include a specific error message, metric value, or system state — not just "experiencing issues"
+- A smart person with no hands-on experience in this specific domain should NOT be able to answer convincingly
+- A strong answer requires naming specific tools, commands, or configurations — not just describing a process
+
+EXAMPLE of a GOOD in-depth question (for MongoDB CSM):
+"A Forbes 500 client running MongoDB Atlas on AWS reports read latency spikes of 1,800ms during peak hours. Their 3-node replica set primary is at 94% CPU, and Atlas Performance Advisor is flagging a missing compound index on their orders collection. The CTO is asking whether the bottleneck is their read preference (currently primaryPreferred), the missing index, or whether they need to scale from M50 to M80. They have a board presentation in 6 hours. What is your immediate diagnostic approach?"
+
+EXAMPLE of a BAD in-depth question (too generic — NEVER acceptable at in-depth level):
+"A customer is experiencing performance issues. How would you diagnose and resolve this?"
+
+`
+            : `\nDEPTH LEVEL — SCREENING: Questions should test thinking frameworks, communication, and problem-solving approach. A strong candidate with relevant experience should be able to answer well. Focus on how they think, not deep technical specifics.\n`;
+
+        const systemPrompt = `You are a senior hiring manager conducting a structured interview. Analyze the job description and generate exactly ${questionCount} interview case questions.${companyContext}${depthInstruction}
 
 STRICT RULES:
 1. Reference a SPECIFIC responsibility or qualification from the JD
@@ -649,7 +1100,8 @@ STRICT RULES:
    - A concrete number that raises stakes
 3. The scenario must make the candidate FEEL the pressure
 4. Match the seniority level in the JD exactly
-5. End every question with:
+5. If company name is provided, scenarios must feel like they happen AT THAT COMPANY — not a generic company
+6. End every question with:
    "This question tests:
    • [skill 1]
    • [skill 2]
@@ -662,10 +1114,10 @@ Return ONLY a raw JSON array, no markdown:
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
-                model: "gpt-3.5-turbo",
+                model: depthLevel === 'indepth' ? "gpt-4o-mini" : "gpt-3.5-turbo",
                 messages: [
                     { role: "system", content: systemPrompt },
-                    { role: "user", content: "JD:\n" + jd }
+                    { role: "user", content: "JD:\n" + jd + (companyName ? "\n\nCompany: " + companyName : '') }
                 ],
                 temperature: 0.7
             })
@@ -781,8 +1233,7 @@ Return ONLY a raw JSON array, no markdown:
 
     // ── Follow-Up ─────────────────────────────────────────────────────────
     async function generateFollowUp(answer, caseTitle) {
-        const key = document.getElementById('apiKey').value;
-        const jd = document.getElementById('jdInput').value;
+const key = document.getElementById('apiKey').value.trim();proj-IH5KjAkOKJh7yH-McPlJVZNwTATXHelHK0faFZpxI0b91vKD48TtkmYyFSXOgxI7dvIfHDWztYT3BlbkFJfj4D4iUvxbzeO59TYtHwOu17s2wJ_UXKITkXG4hJQKFhuSd4_stHhSZKrHzp1an2FA_Kfcl5QA";        const jd = document.getElementById('jdInput').value;
 
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -811,6 +1262,86 @@ Return ONLY JSON: {"title": "Follow-up: [label]", "question": "..."}` },
     async function processStep() {
         const ans = document.getElementById('userAnswer').value.trim();
         if (!ans) return alert("Please enter a response.");
+
+        // ── Gibberish / invalid answer check ────────────────────────────
+        if (isInvalidAnswer(ans)) {
+            gibberishCount++;
+            if (gibberishCount >= 2) {
+                // Terminate assessment
+                warningLog.push({ type: 'Assessment terminated — repeated invalid answers', time: new Date().toLocaleTimeString() });
+                showModal('🚫', 'Assessment Terminated',
+                    'You have submitted invalid responses multiple times. This assessment has been terminated and cannot be completed. Please contact the hiring team if you believe this is an error.',
+                    [{ label: 'Close', primary: false, action: () => {
+                        document.getElementById('examBox').style.display = 'none';
+                        document.getElementById('integrityPanel').style.display = 'none';
+                        if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+                        document.getElementById('proctorContainer').style.display = 'none';
+                        document.getElementById('recruiterReport').innerHTML = `
+                        <div style="background:#1c1f26;border:1px solid #2e3340;border-radius:14px;padding:32px;text-align:center;">
+                            <div style="font-size:48px;margin-bottom:16px;">🚫</div>
+                            <h2 style="font-family:Inter,sans-serif;font-weight:700;font-size:20px;color:#e2e8f0;margin-bottom:10px;">Assessment Terminated</h2>
+                            <p style="font-size:14px;color:#7c8a9e;line-height:1.7;max-width:400px;margin:0 auto 24px;">This assessment was terminated due to repeated submission of invalid responses. The hiring team has been notified.</p>
+                            <div style="background:#22262f;border:1px solid #2e3340;border-radius:10px;padding:20px;max-width:400px;margin:0 auto;text-align:left;">
+                                <p style="font-size:12px;color:#7c8a9e;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Optional message to the hiring team</p>
+                                <textarea id="terminationMessage" rows="4" placeholder="If you'd like to add context, you may write it here..." style="width:100%;box-sizing:border-box;background:#111318;border:1px solid #2e3340;border-radius:8px;color:#e2e8f0;font-family:Inter,sans-serif;font-size:13px;padding:12px;resize:vertical;outline:none;"></textarea>
+                                <button onclick="submitTerminationMessage()" style="width:100%;margin-top:10px;padding:12px;background:#2e3340;border:none;border-radius:8px;color:#7c8a9e;font-family:Inter,sans-serif;font-size:13px;cursor:pointer;">Send message</button>
+                            </div>
+                        </div>`;
+                        document.getElementById('recruiterReport').style.display = 'block';
+                        if (timerInterval) clearInterval(timerInterval);
+                    }}]
+                );
+                return;
+            }
+
+            // First invalid answer — warn once
+            if (!gibberishWarningShown) {
+                gibberishWarningShown = true;
+                warningLog.push({ type: 'Gibberish warning shown', question: currentStage, time: new Date().toLocaleTimeString() });
+                showModal('⚠️', 'Invalid Response Detected',
+                    'Your answer does not appear to be a valid response to this question. Please provide a genuine answer in English. If you submit another invalid response, the assessment will be terminated automatically.',
+                    [{ label: '✏️ Clear and answer properly', primary: true, action: () => {
+                        document.getElementById('userAnswer').value = '';
+                        document.getElementById('userAnswer').focus();
+                        warningLog.push({ type: 'Gibberish warning acknowledged', question: currentStage, time: new Date().toLocaleTimeString() });
+                    }}]
+                );
+            } else {
+                // Second invalid answer — no modal, just count (termination on next)
+                showModal('⚠️', 'Invalid Response — Final Warning',
+                    'This is your final warning. Your next invalid response will terminate the assessment immediately.',
+                    [{ label: 'I understand', primary: true, action: () => {} }]
+                );
+            }
+            return;
+        }
+
+        // ── Short answer warning — once only ─────────────────────────────
+        const wordCount = ans.split(/\s+/).filter(w => w.length > 0).length;
+        if (wordCount < 12 && !shortAnswerWarningShown) {
+            shortAnswerWarningShown = true;
+            warningLog.push({ type: 'Short answer warning shown', question: currentStage, wordCount, time: new Date().toLocaleTimeString() });
+            showModal('✍️', 'Answer Too Brief',
+                'Your answer is very short (' + wordCount + ' word' + (wordCount === 1 ? '' : 's') + '). This question requires a detailed response to properly evaluate your experience. Please provide more context — what you did, how you did it, and what the outcome was.',
+                [
+                    { label: '✏️ Expand my answer', primary: true, action: () => {
+                        document.getElementById('userAnswer').focus();
+                        warningLog.push({ type: 'Chose to expand answer', question: currentStage, time: new Date().toLocaleTimeString() });
+                    }},
+                    { label: 'Submit anyway', primary: false, action: () => {
+                        warningLog.push({ type: 'Submitted short answer anyway', question: currentStage, wordCount, time: new Date().toLocaleTimeString() });
+                        submitAnswer();
+                    }}
+                ]
+            );
+            return;
+        }
+
+        submitAnswer();
+    }
+
+    async function submitAnswer() {
+        const ans = document.getElementById('userAnswer').value.trim();
         stopTimer();
         const btn = document.getElementById('submitBtn');
         btn.textContent = "Processing...";
@@ -848,75 +1379,101 @@ Return ONLY JSON: {"title": "Follow-up: [label]", "question": "..."}` },
         if (videoStream) videoStream.getTracks().forEach(t => t.stop());
         document.getElementById('proctorContainer').style.display = 'none';
 
-        const key = document.getElementById('apiKey').value;
-        const jd = document.getElementById('jdInput').value;
         const integrityScore = Math.max(0, 100 - (tabSwitches * 25) - (pasteEvents * 20));
+        const policy = (window.sentinelConfig || {}).integrityWeight || 'strict';
         const avgResponseTime = responseTimes.length > 0 ? Math.floor(responseTimes.reduce((a,b)=>a+b,0)/responseTimes.length) : 0;
         const suspiciouslyFast = responseTimes.filter(t => t < 30).length;
         const integrityFlag = integrityLog.length > 0 ? integrityLog.map(e=>e.type+" at "+e.time).join(", ") : "None";
 
-        // ── Local relevance/duplication check (does not rely on the LLM) ──
-        const answersOnly = interviewLog.map(e => (e.answer || '').trim().toLowerCase());
+        // ── Short answer check ────────────────────────────────────────────
+        const shortAnswers = interviewLog.filter(e => e.answer.trim().split(/\s+/).filter(w=>w.length>0).length < 12).length;
+        const hasShortAnswers = shortAnswers >= 2;
+
+        // ── Warning log summary ───────────────────────────────────────────
+        const warningsSummary = warningLog.length > 0
+            ? warningLog.map(w => w.type + (w.question !== undefined ? ' (Q' + (w.question+1) + ')' : '') + ' at ' + w.time).join('; ')
+            : "None";
+
+        // ── Duplicate detection — exact or near-exact copy-paste only ────
+        // We only flag answers that are IDENTICAL or near-identical at character level.
+        // Word-overlap is NOT used because technical answers share domain vocabulary.
+        const answersOnly = interviewLog.map(e => (e.answer || '').trim().toLowerCase().replace(/\s+/g, ' '));
         let duplicateCount = 0;
         for (let i = 0; i < answersOnly.length; i++) {
             for (let j = i + 1; j < answersOnly.length; j++) {
                 const a = answersOnly[i], b = answersOnly[j];
-                if (!a || !b) continue;
-                // Simple similarity: shared word overlap ratio
-                const wordsA = new Set(a.split(/\s+/).filter(w => w.length > 3));
-                const wordsB = new Set(b.split(/\s+/).filter(w => w.length > 3));
-                if (wordsA.size === 0 || wordsB.size === 0) continue;
-                const intersection = [...wordsA].filter(w => wordsB.has(w)).length;
-                const overlap = intersection / Math.min(wordsA.size, wordsB.size);
-                if (overlap > 0.7) duplicateCount++;
+                if (!a || !b || a.length < 50 || b.length < 50) continue;
+                // Only flag if answers are 95%+ character-level identical
+                // Use longest common substring ratio
+                const shorter = a.length < b.length ? a : b;
+                const longer = a.length < b.length ? b : a;
+                // Check if shorter is mostly contained in longer
+                let matches = 0;
+                const chunkSize = 20;
+                for (let k = 0; k <= shorter.length - chunkSize; k += chunkSize) {
+                    if (longer.includes(shorter.substring(k, k + chunkSize))) matches++;
+                }
+                const chunks = Math.floor(shorter.length / chunkSize);
+                const similarity = chunks > 0 ? matches / chunks : 0;
+                if (similarity > 0.90) duplicateCount++;
             }
         }
-        const hasDuplicateAnswers = duplicateCount > 0;
+        const hasDuplicateAnswers = duplicateCount >= 2; // require 2+ pairs to be sure
 
-        const systemPrompt = `You are a senior recruiter. Evaluate this candidate holistically — personal background, screening answers, AND interview performance.
+        const systemPrompt = `You are a senior technical hiring manager. Your job is to score candidates accurately and differentiate between exceptional, average, and weak answers. Most candidates score 55-75. A score above 80 requires genuinely impressive, specific answers.
 
-CRITICAL — RELEVANCE CHECK (do this FIRST, before scoring anything):
-For EACH answer in the interview transcript, check whether it actually responds to ITS SPECIFIC question — not a different question, not a generic statement. A strong-sounding answer that is copy-pasted or reused across multiple unrelated questions is a SEVERE red flag, not a sign of competence. If you detect this pattern (the same or near-identical answer given to substantively different questions), you MUST:
-- Treat it as a major integrity and competence failure
-- Drop technical_depth and strategic_thinking scores sharply (below 40)
-- Explicitly call this out by name in "gaps" (e.g. "Gave the same answer to multiple unrelated questions, ignoring the specific scenario each time")
-- Cap overall_score at 35 and set verdict to "NO HIRE"
+RULE 1 — IGNORE MISSING SCREENING ANSWERS:
+Base evaluation exclusively on interview answers. Never penalize for missing screening data.
 
-Local duplication detector result (system-computed, treat as ground truth): ${hasDuplicateAnswers ? 'DUPLICATE/RECYCLED ANSWERS DETECTED across ' + duplicateCount + ' answer pair(s). Apply the rule above.' : 'No significant duplication detected.'}
+RULE 2 — TECHNICAL DEPTH IS THE KEY DIFFERENTIATOR:
+Score technical_depth based on HOW specific the candidate was:
 
-Return ONLY JSON (no markdown):
+90-100: Named exact tools, commands, or metrics. Example: "run explain() to check for COLLSCAN vs IXSCAN", "set wtimeout to 5000ms", "check WiredTiger cache hit ratio", "use getShardDistribution()"
+70-89: Showed real understanding with some specifics. Example: "check replication lag on each shard", "tune write concern for non-critical writes"
+50-69: Correct direction but vague. Example: "check the shard configuration", "review index usage", "look at performance metrics"
+30-49: Generic process without technical content. Example: "I would work with the team to investigate", "review the configuration"
+Below 30: No technical substance. Example: "I would check the dashboard and communicate with stakeholders"
+
+RULE 3 — OVERALL SCORE CALIBRATION:
+- If ALL answers are vague and generic (50-69 range): overall CANNOT exceed 65
+- If answers mix specific and vague: overall = 65-75
+- If answers are consistently specific with named tools/commands: overall = 75-90
+- If answers are exceptional in every dimension: overall = 90-100
+
+RULE 4 — DUPLICATE ANSWERS:
+${hasDuplicateAnswers ? 'DUPLICATE ANSWERS DETECTED. Cap overall at 35, set verdict to NO HIRE.' : 'No duplicates detected.'}
+
+RULE 5 — INTEGRITY (only applies if policy is not open):
+${policy !== 'open' ? '- If integrity < 50: overall CANNOT exceed 60, verdict MUST be HOLD or NO HIRE\n- If integrity < 25: overall CANNOT exceed 40, verdict MUST be NO HIRE' : '- Integrity policy is OPEN. Do not factor integrity into any scores.'}
+
+Return ONLY valid JSON, no markdown:
 {
   "overall_score": <0-100>,
   "verdict": "STRONG HIRE" or "HIRE" or "HOLD" or "NO HIRE",
-  "summary": "<2-3 sentences referencing SPECIFIC things from their answers>",
-  "fit_summary": "<1-2 sentences on how their background fits the role requirements>",
+  "summary": "<2-3 sentences quoting or paraphrasing SPECIFIC things the candidate said>",
+  "fit_summary": "<1-2 sentences on background fit>",
   "scores": {
     "strategic_thinking": <0-100>,
     "communication": <0-100>,
     "cross_functional": <0-100>,
     "technical_depth": <0-100>
   },
-  "strengths": ["<specific strength>", "<strength 2>", "<strength 3>"],
-  "gaps": ["<specific gap>", "<gap 2>"],
-  "recommendation": "<1 paragraph with actionable next steps>"
-}
-
-INTEGRITY RULES:
-- If integrity < 50: overall CANNOT exceed 60, verdict MUST be "HOLD" or "NO HIRE"
-- If integrity < 25: overall CANNOT exceed 40, verdict MUST be "NO HIRE"
-- Integrity issues MUST be mentioned in recommendation`;
+  "strengths": ["<quote or paraphrase something specific they said>", "<strength 2>", "<strength 3>"],
+  "gaps": ["<specific gap referencing what they said or failed to say>", "<gap 2>"],
+  "recommendation": "<1 paragraph with specific next steps>"
+}`;
 
         try {
             const res = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
                 body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
+                    model: "gpt-4o-mini",
                     messages: [
                         { role: "system", content: systemPrompt },
-                        { role: "user", content: `JD:\n${jd}\n\nCandidate: ${JSON.stringify(personalData)}\n\nScreening answers:\n${JSON.stringify(screeningLog, null, 2)}\n\nInterview transcript (each entry includes the phase/question title and the candidate's answer):\n${JSON.stringify(interviewLog, null, 2)}\n\nIntegrity events: ${integrityFlag}\nIntegrity score: ${integrityScore}/100\nAvg response time: ${avgResponseTime}s\nFast answers (<30s): ${suspiciouslyFast}` }
+                        { role: "user", content: `JD:\n${jd}\n\nCandidate: ${JSON.stringify(personalData)}\n\n${screeningLog.some(s => s.answer && s.answer !== 'Not answered') ? 'Screening answers:\n' + JSON.stringify(screeningLog, null, 2) + '\n\n' : ''}Interview transcript (each entry includes the phase/question title and the candidate's answer):\n${JSON.stringify(interviewLog, null, 2)}\n\n${policy !== 'open' ? `Integrity events: ${integrityFlag}\nIntegrity score: ${integrityScore}/100\nAvg response time: ${avgResponseTime}s\nFast answers (<30s): ${suspiciouslyFast}` : `Avg response time: ${avgResponseTime}s`}` }
                     ],
-                    temperature: 0.4
+                    temperature: 0.3
                 })
             });
             const data = await res.json();
@@ -925,7 +1482,34 @@ INTEGRITY RULES:
             let report = JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
 
             // ── HARD-CODED ENFORCEMENT (does not rely on the LLM following instructions) ──
-            report = enforceScoreIntegrity(report, integrityScore, hasDuplicateAnswers);
+            report = enforceScoreIntegrity(report, integrityScore, hasDuplicateAnswers, hasShortAnswers);
+
+            // Add warning log to recommendation if warnings were shown
+            if (warningLog.length > 0) {
+                const retyped = warningLog.filter(w => w.type === 'Chose to retype').length;
+                const keptPaste = warningLog.filter(w => w.type === 'Chose to keep paste').length;
+                const submittedShort = warningLog.filter(w => w.type === 'Submitted short answer anyway').length;
+                let warnNote = '\n\nWarning events during assessment: ';
+                if (retyped > 0) warnNote += retyped + ' answer(s) retyped after paste warning. ';
+                if (keptPaste > 0) warnNote += keptPaste + ' paste(s) kept after warning. ';
+                if (submittedShort > 0) warnNote += submittedShort + ' short answer(s) submitted after being warned. ';
+                report.recommendation += warnNote;
+            }
+
+            // Apply category weights to overall score
+            const weightedOverall = applyWeightsToScore(report.scores);
+            if (weightedOverall !== null && !hasDuplicateAnswers && !hasShortAnswers) {
+                // Only apply weights if no hard overrides active
+                const cfg = window.sentinelConfig || {};
+                const p = cfg.integrityWeight || 'strict';
+                const noIntegrityCap = p === 'open' || integrityScore >= 50;
+                if (noIntegrityCap) {
+                    report.overall_score = weightedOverall;
+                } else {
+                    // Apply weight but still respect integrity cap
+                    report.overall_score = Math.min(weightedOverall, report.overall_score);
+                }
+            }
 
             allCandidates.push({
                 name: personalData.name || 'Candidate',
@@ -936,10 +1520,18 @@ INTEGRITY RULES:
                 avgTime: avgResponseTime,
                 city: personalData.city,
                 experience: personalData.experience,
-                flaggedDuplicates: hasDuplicateAnswers
+                flaggedDuplicates: hasDuplicateAnswers,
+                date: new Date().toLocaleDateString(),
+                // Full report for AI comparison
+                summary: report.summary,
+                fit_summary: report.fit_summary,
+                strengths: report.strengths,
+                gaps: report.gaps,
+                recommendation: report.recommendation
             });
+            try { localStorage.setItem('sentinel_candidates', JSON.stringify(allCandidates)); } catch(e) {}
 
-            renderReport(report, integrityScore, avgResponseTime, suspiciouslyFast, hasDuplicateAnswers);
+            renderReport(report, integrityScore, avgResponseTime, suspiciouslyFast, hasDuplicateAnswers, hasShortAnswers);
         } catch (err) {
             document.getElementById('recruiterReport').innerHTML = '<div style="color:var(--danger);padding:20px;">Report failed: ' + err.message + '</div>';
             document.getElementById('recruiterReport').style.display = 'block';
@@ -948,33 +1540,70 @@ INTEGRITY RULES:
     }
 
     // ── Hard-coded score enforcement (cannot be bypassed by the LLM) ───────
-    function enforceScoreIntegrity(report, integrityScore, hasDuplicateAnswers) {
+    function enforceScoreIntegrity(report, integrityScore, hasDuplicateAnswers, hasShortAnswers) {
         let cappedNote = [];
+        const policy = (window.sentinelConfig || {}).integrityWeight || 'strict';
 
         if (hasDuplicateAnswers) {
-            report.overall_score = Math.min(report.overall_score, 35);
+            report.overall_score = 10;
             report.verdict = "NO HIRE";
-            report.scores.technical_depth = Math.min(report.scores.technical_depth, 35);
-            report.scores.strategic_thinking = Math.min(report.scores.strategic_thinking, 35);
-            if (!report.gaps.some(g => g.toLowerCase().includes('duplicate') || g.toLowerCase().includes('same answer') || g.toLowerCase().includes('recycled'))) {
-                report.gaps.unshift("Gave the same or near-identical answer across multiple unrelated questions — strong indicator of not engaging with each specific scenario.");
-            }
+            report.scores.strategic_thinking = 10;
+            report.scores.communication = 10;
+            report.scores.cross_functional = 10;
+            report.scores.technical_depth = 10;
+            report.summary = "Assessment invalidated. The candidate submitted identical or near-identical answers to multiple unrelated questions. No genuine evaluation of skills was possible. This assessment must be discarded and re-administered under supervised conditions.";
+            report.fit_summary = "Cannot be determined — answers were recycled and not tailored to specific scenarios.";
+            report.strengths = [];
+            report.gaps = [
+                "Submitted identical answers to multiple unrelated questions — no evidence of situational awareness",
+                "No genuine engagement with any specific scenario beyond the first question",
+                "Assessment is invalid — must be re-run under supervised conditions"
+            ];
+            report.recommendation = "This assessment is invalid due to duplicate/recycled answers. Do NOT proceed with this candidate. Re-administer under supervised conditions.";
             cappedNote.push("duplicate/recycled answers detected");
         }
 
-        if (integrityScore < 25) {
-            report.overall_score = Math.min(report.overall_score, 40);
-            report.verdict = "NO HIRE";
-            cappedNote.push("integrity score critically low");
-        } else if (integrityScore < 50) {
-            report.overall_score = Math.min(report.overall_score, 60);
-            if (!["HOLD","NO HIRE"].includes(report.verdict)) report.verdict = "HOLD";
-            cappedNote.push("integrity score below threshold");
+        if (hasShortAnswers && !hasDuplicateAnswers) {
+            report.overall_score = Math.min(report.overall_score, 25);
+            report.scores.strategic_thinking = Math.min(report.scores.strategic_thinking, 25);
+            report.scores.technical_depth = Math.min(report.scores.technical_depth, 25);
+            report.scores.communication = Math.min(report.scores.communication, 25);
+            report.scores.cross_functional = Math.min(report.scores.cross_functional, 25);
+            report.strengths = [];
+            if (!["HOLD","NO HIRE"].includes(report.verdict)) report.verdict = "NO HIRE";
+            if (!report.gaps.some(g => g.toLowerCase().includes('brief') || g.toLowerCase().includes('short'))) {
+                report.gaps.unshift("Multiple answers were too brief to properly evaluate skills or experience");
+            }
+            cappedNote.push("multiple answers too short to evaluate");
+        }
+
+        if (policy === 'open') {
+            if (integrityScore < 50) cappedNote.push("integrity events noted (policy: open — no score impact)");
+        } else if (policy === 'moderate') {
+            if (integrityScore < 25) {
+                report.overall_score = Math.min(report.overall_score, 60);
+                if (!["HOLD","NO HIRE"].includes(report.verdict)) report.verdict = "HOLD";
+                cappedNote.push("integrity score low — score reduced (policy: moderate)");
+            } else if (integrityScore < 50) {
+                report.overall_score = Math.min(report.overall_score, 75);
+                cappedNote.push("integrity events noted — minor score reduction (policy: moderate)");
+            }
+        } else {
+            if (integrityScore < 25) {
+                report.overall_score = Math.min(report.overall_score, 15);
+                report.verdict = "NO HIRE";
+                report.recommendation = "Critical integrity violations detected. Do NOT proceed. Re-administer under supervised in-person conditions.";
+                cappedNote.push("integrity score critically low (policy: strict)");
+            } else if (integrityScore < 50) {
+                report.overall_score = Math.min(report.overall_score, 60);
+                if (!["HOLD","NO HIRE"].includes(report.verdict)) report.verdict = "HOLD";
+                cappedNote.push("integrity score below threshold (policy: strict)");
+            }
         }
 
         if (cappedNote.length > 0) {
-            const noteText = "Note: Score and verdict were automatically capped due to: " + cappedNote.join(", ") + ".";
-            if (!report.recommendation.includes("automatically capped")) {
+            const noteText = "\u26a0\ufe0f Auto-override: " + cappedNote.join("; ") + ".";
+            if (!report.recommendation.includes("Auto-override")) {
                 report.recommendation = noteText + " " + report.recommendation;
             }
         }
@@ -983,7 +1612,7 @@ INTEGRITY RULES:
     }
 
     // ── Render Report ─────────────────────────────────────────────────────
-    function renderReport(r, integrityScore, avgTime, fastAnswers, hasDuplicateAnswers) {
+    function renderReport(r, integrityScore, avgTime, fastAnswers, hasDuplicateAnswers, hasShortAnswers) {
         document.getElementById('finalView').style.display = 'none';
         const isPass = ["STRONG HIRE","HIRE"].includes(r.verdict);
         const isWarn = r.verdict === "HOLD";
@@ -992,80 +1621,130 @@ INTEGRITY RULES:
         const allScores = { ...r.scores, integrity: integrityScore, overall: r.overall_score };
         const avgM = Math.floor(avgTime/60), avgS = avgTime%60;
 
-        let integrityWarning = '';
+        let alertBanners = '';
         if (integrityScore < 50) {
-            integrityWarning += `<div class="integrity-warning">⚠️ <strong>Integrity Alert:</strong> ${tabSwitches} tab switch(es), ${pasteEvents} paste event(s). ${fastAnswers > 0 ? fastAnswers + ' answer(s) under 30 seconds.' : ''} Scores adjusted. Recommend in-person verification.</div>`;
+            alertBanners += `
+            <div style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.25);border-radius:10px;padding:16px 20px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;">
+                <span style="font-size:18px;flex-shrink:0;">🚨</span>
+                <div>
+                    <p style="font-size:13px;font-weight:600;color:var(--danger);margin-bottom:4px;">Integrity Alert</p>
+                    <p style="font-size:13px;color:#f8a0b0;line-height:1.6;">${tabSwitches} tab switch(es) · ${pasteEvents} paste event(s)${fastAnswers > 0 ? ' · ' + fastAnswers + ' answer(s) under 30 seconds' : ''}. Scores adjusted. Recommend in-person verification.</p>
+                </div>
+            </div>`;
         }
         if (hasDuplicateAnswers) {
-            integrityWarning += `<div class="integrity-warning">⚠️ <strong>Duplicate Answer Alert:</strong> The candidate submitted the same or near-identical answer to multiple, substantively different questions. This is treated as a critical reliability failure — score and verdict were capped automatically. Recommend disqualifying this assessment and re-running it live with the candidate.</div>`;
+            alertBanners += `
+            <div style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.25);border-radius:10px;padding:16px 20px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;">
+                <span style="font-size:18px;flex-shrink:0;">⛔</span>
+                <div>
+                    <p style="font-size:13px;font-weight:600;color:var(--danger);margin-bottom:4px;">Assessment Invalidated — Duplicate Answers Detected</p>
+                    <p style="font-size:13px;color:#f8a0b0;line-height:1.6;">The candidate submitted identical or near-identical answers to multiple unrelated questions. This assessment cannot be used for hiring decisions. Re-administer under supervised conditions.</p>
+                </div>
+            </div>`;
+        }
+        if (hasShortAnswers && !hasDuplicateAnswers) {
+            alertBanners += `
+            <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:16px 20px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;">
+                <span style="font-size:18px;flex-shrink:0;">⚠️</span>
+                <div>
+                    <p style="font-size:13px;font-weight:600;color:var(--warn);margin-bottom:4px;">Multiple Answers Too Brief</p>
+                    <p style="font-size:13px;color:#fcd57a;line-height:1.6;">Several answers were too short to properly evaluate the candidate's experience or skills. Scores have been capped. Consider a follow-up interview to probe these areas.</p>
+                </div>
+            </div>`;
+        }
+        if (warningLog.length > 0) {
+            const keptPaste = warningLog.filter(w => w.type === 'Chose to keep paste').length;
+            const submittedShort = warningLog.filter(w => w.type === 'Submitted short answer anyway').length;
+            if (keptPaste > 0 || submittedShort > 0) {
+                alertBanners += `
+                <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:10px;padding:16px 20px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;">
+                    <span style="font-size:18px;flex-shrink:0;">ℹ️</span>
+                    <div>
+                        <p style="font-size:13px;font-weight:600;color:#93c5fd;margin-bottom:4px;">Candidate Was Warned</p>
+                        <p style="font-size:13px;color:#93c5fd;line-height:1.6;">${keptPaste > 0 ? keptPaste + ' paste(s) kept after warning. ' : ''}${submittedShort > 0 ? submittedShort + ' short answer(s) submitted after being warned to elaborate.' : ''}</p>
+                    </div>
+                </div>`;
+            }
         }
 
+        const scoreLabels = {
+            strategic_thinking: 'Strategic Thinking',
+            communication: 'Communication',
+            cross_functional: 'Cross-Functional',
+            technical_depth: 'Technical Depth',
+            integrity: 'Integrity',
+            overall: 'Overall'
+        };
+
         const html = `
-        <div class="header">
-            <div class="logo-mark">S</div>
-            <div class="header-text"><h1>${personalData.name || 'Candidate'}</h1><p>Assessment Report</p></div>
-            <div class="badge">V34</div>
-        </div>
-
-        ${integrityWarning}
-
-        <div class="verdict-box ${verdictClass}">
-            <div class="verdict-label">Hiring Recommendation</div>
-            <div class="verdict-text">${r.verdict}</div>
-        </div>
-
-        <div class="report-section">
-            <h3>Candidate Profile</h3>
-            <div class="candidate-info-grid">
-                <div class="info-item"><div class="info-label">Name</div><div class="info-value">${personalData.name || '—'}</div></div>
-                <div class="info-item"><div class="info-label">Location</div><div class="info-value">${personalData.city || '—'}</div></div>
-                <div class="info-item"><div class="info-label">Experience</div><div class="info-value">${personalData.experience || '—'}</div></div>
-                <div class="info-item"><div class="info-label">Current Role</div><div class="info-value">${personalData.currentRole || '—'}</div></div>
-                <div class="info-item"><div class="info-label">Relocation</div><div class="info-value">${personalData.relocation || '—'}</div></div>
-                <div class="info-item"><div class="info-label">LinkedIn</div><div class="info-value">${personalData.linkedin ? '<a href="'+personalData.linkedin+'" target="_blank" style="color:var(--green)">View Profile</a>' : '—'}</div></div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+            <div style="width:44px;height:44px;background:var(--green-dim);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;flex-shrink:0;">S</div>
+            <div>
+                <p style="font-size:18px;font-weight:700;color:var(--text);">${personalData.name || 'Candidate'}</p>
+                <p style="font-size:12px;color:var(--text-dim);margin-top:2px;">Assessment Report · Sentinel V45</p>
+            </div>
+            <div style="margin-left:auto;">
+                <span style="font-size:11px;background:${isPass?'rgba(52,211,153,0.1)':isWarn?'rgba(245,158,11,0.1)':'rgba(244,63,94,0.1)'};color:${isPass?'var(--green)':isWarn?'var(--warn)':'var(--danger)'};border:1px solid ${isPass?'rgba(52,211,153,0.25)':isWarn?'rgba(245,158,11,0.25)':'rgba(244,63,94,0.25)'};padding:5px 14px;border-radius:20px;font-weight:600;letter-spacing:0.04em;">${r.verdict}</span>
             </div>
         </div>
 
-        <div class="report-section">
-            <h3>Role Fit Summary</h3>
-            <p class="prose">${r.fit_summary || r.summary}</p>
+        ${alertBanners}
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+                <p style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Candidate Profile</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    ${[['Name', personalData.name],['Location', personalData.city],['Experience', personalData.experience],['Current Role', personalData.currentRole],['Relocation', personalData.relocation],['LinkedIn', personalData.linkedin ? '<a href="'+personalData.linkedin+'" target="_blank" style="color:var(--green);text-decoration:none;">View →</a>' : '—']].map(([l,v])=>`
+                    <div>
+                        <p style="font-size:10px;color:var(--text-dim);margin-bottom:2px;">${l}</p>
+                        <p style="font-size:13px;color:var(--text);">${v||'—'}</p>
+                    </div>`).join('')}
+                </div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;">
+                <p style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Role Fit</p>
+                <p style="font-size:13px;color:var(--text);line-height:1.7;">${r.fit_summary || r.summary}</p>
+            </div>
         </div>
 
-        <div class="report-section">
-            <h3>Score Breakdown</h3>
-            <div class="score-grid">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
+            <p style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">Score Breakdown</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
                 ${Object.entries(allScores).map(([key, val]) => `
-                <div class="score-item">
-                    <div class="label">${key.replace(/_/g,' ')}</div>
-                    <div class="score" style="color:${scoreColor(val)}">${val}<span>/100</span></div>
-                    <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${val}%;background:${scoreColor(val)};"></div></div>
+                <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border);">
+                    <p style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">${scoreLabels[key]||key.replace(/_/g,' ')}</p>
+                    <p style="font-size:26px;font-weight:700;color:${scoreColor(val)};line-height:1;">${val}<span style="font-size:13px;color:var(--text-dim);font-weight:400;">/100</span></p>
+                    <div style="margin-top:8px;background:var(--border);height:3px;border-radius:2px;overflow:hidden;">
+                        <div style="width:${val}%;height:100%;background:${scoreColor(val)};border-radius:2px;"></div>
+                    </div>
                 </div>`).join('')}
-                <div class="score-item">
-                    <div class="label">Avg Response Time</div>
-                    <div class="score" style="color:var(--text-dim);font-size:20px;">${avgM}:${String(avgS).padStart(2,'0')}</div>
+                <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border);">
+                    <p style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Avg Response</p>
+                    <p style="font-size:26px;font-weight:700;color:var(--text-dim);line-height:1;">${avgM}:${String(avgS).padStart(2,'0')}</p>
                 </div>
             </div>
         </div>
 
-        <div class="report-section">
-            <h3>Executive Summary</h3>
-            <p class="prose">${r.summary}</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
+            <p style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Executive Summary</p>
+            <p style="font-size:13px;color:var(--text);line-height:1.8;">${r.summary}</p>
         </div>
 
-        <div class="report-section">
-            <h3>Strengths & Gaps</h3>
-            <div class="tag-list">
-                ${r.strengths.map(s=>'<span class="tag strength">✓ '+s+'</span>').join('')}
-                ${r.gaps.map(g=>'<span class="tag weakness">✗ '+g+'</span>').join('')}
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
+            <p style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Strengths & Gaps</p>
+            ${r.strengths.length === 0 && (hasDuplicateAnswers || hasShortAnswers) ? '<p style="font-size:13px;color:var(--text-dim);font-style:italic;">No strengths identified — answers were insufficient for evaluation.</p>' : ''}
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                ${r.strengths.map(s=>`<span style="font-size:12px;padding:5px 12px;border-radius:20px;background:rgba(52,211,153,0.08);color:var(--green);border:1px solid rgba(52,211,153,0.2);">✓ ${s}</span>`).join('')}
+                ${r.gaps.map(g=>`<span style="font-size:12px;padding:5px 12px;border-radius:20px;background:rgba(244,63,94,0.08);color:var(--danger);border:1px solid rgba(244,63,94,0.2);">✗ ${g}</span>`).join('')}
             </div>
         </div>
 
-        <div class="report-section">
-            <h3>Recommendation for Hiring Team</h3>
-            <p class="prose">${r.recommendation}</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
+            <p style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Recommendation for Hiring Team</p>
+            <p style="font-size:13px;color:var(--text);line-height:1.8;">${r.recommendation}</p>
         </div>
 
-        <div class="btn-row">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
             <button class="btn btn-ghost" onclick="restartAssessment()">← New Assessment</button>
             <button class="btn btn-ghost" onclick="showComparison()">📊 Compare Candidates</button>
         </div>`;
@@ -1076,15 +1755,61 @@ INTEGRITY RULES:
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ── Comparison filters ────────────────────────────────────────────────
+    let filterVerdict = 'all';
+    let filterScore = 0;
+
+    function setVerdictFilter(v) {
+        filterVerdict = v;
+        ['all','sh','h','ho','nh'].forEach(id => {
+            const btn = document.getElementById('f_' + id);
+            if (btn) { btn.style.borderColor='var(--border)'; btn.style.background='transparent'; btn.style.color='var(--text-dim)'; }
+        });
+        const map = {'all':'f_all','STRONG HIRE':'f_sh','HIRE':'f_h','HOLD':'f_ho','NO HIRE':'f_nh'};
+        const active = document.getElementById(map[v]);
+        if (active) { active.style.borderColor='var(--green)'; active.style.background='rgba(52,211,153,0.1)'; active.style.color='var(--green)'; }
+        renderComparison();
+    }
+
+    function setScoreFilter(val) {
+        filterScore = parseInt(val);
+        document.getElementById('scoreThresholdLabel').textContent = val;
+        renderComparison();
+    }
+
+    function clearAllCandidates() {
+        if (!confirm('Clear all saved candidates? This cannot be undone.')) return;
+        allCandidates = [];
+        try { localStorage.removeItem('sentinel_candidates'); } catch(e) {}
+        renderComparison();
+    }
+
     // ── Comparison ────────────────────────────────────────────────────────
     function renderComparison() {
-        const verdictClass = v => ["STRONG HIRE","HIRE"].includes(v) ? 'pass' : v === "HOLD" ? 'warn' : 'fail';
         const scoreColor = s => s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--warn)' : 'var(--danger)';
-        const rows = allCandidates.map(c => `
+        const verdictColor = v => ["STRONG HIRE","HIRE"].includes(v) ? 'var(--green)' : v === "HOLD" ? 'var(--warn)' : 'var(--danger)';
+        const verdictBg = v => ["STRONG HIRE","HIRE"].includes(v) ? 'rgba(52,211,153,0.1)' : v === "HOLD" ? 'rgba(245,158,11,0.1)' : 'rgba(244,63,94,0.1)';
+
+        let filtered = allCandidates.filter(c => {
+            if (filterVerdict !== 'all' && c.verdict !== filterVerdict) return false;
+            if (c.overall < filterScore) return false;
+            return true;
+        }).sort((a,b) => b.overall - a.overall);
+
+        const rows = filtered.length === 0
+            ? `<tr><td colspan="8" style="text-align:center;color:var(--text-dim);padding:32px;">No candidates match the current filters.</td></tr>`
+            : filtered.map((c,i) => `
         <tr>
-            <td><strong style="color:white">${c.name}</strong><br><span style="color:var(--text-dim);font-size:11px;">${c.city || ''} · ${c.experience || ''}</span></td>
-            <td><span style="color:${scoreColor(c.overall)};font-family:'Syne',sans-serif;font-weight:800;">${c.overall}</span></td>
-            <td><span class="verdict-pill ${verdictClass(c.verdict)}">${c.verdict}</span></td>
+            <td style="padding:12px 16px;">
+                <input type="checkbox" data-idx="${allCandidates.indexOf(c)}" onchange="updateSelectedCount()" style="accent-color:var(--green);width:16px;height:16px;cursor:pointer;">
+            </td>
+            <td>
+                <strong style="color:white">${c.name}</strong>
+                ${i===0 ? '<span style="font-size:10px;background:rgba(52,211,153,0.15);color:var(--green);padding:2px 7px;border-radius:10px;margin-left:6px;">Top</span>' : ''}
+                <br><span style="color:var(--text-dim);font-size:11px;">${c.city||''} · ${c.experience||''}${c.date?' · '+c.date:''}</span>
+            </td>
+            <td><span style="color:${scoreColor(c.overall)};font-weight:700;font-size:16px;">${c.overall}</span></td>
+            <td><span style="font-size:11px;padding:3px 10px;border-radius:20px;background:${verdictBg(c.verdict)};color:${verdictColor(c.verdict)};border:1px solid ${verdictColor(c.verdict)}33;">${c.verdict}</span></td>
             <td style="color:${scoreColor(c.scores.strategic_thinking)}">${c.scores.strategic_thinking}</td>
             <td style="color:${scoreColor(c.scores.technical_depth)}">${c.scores.technical_depth}</td>
             <td style="color:${scoreColor(c.scores.communication)}">${c.scores.communication}</td>
@@ -1092,16 +1817,100 @@ INTEGRITY RULES:
         </tr>`).join('');
 
         document.getElementById('comparisonTable').innerHTML = `
-        <div class="report-section">
-            <h3>${allCandidates.length} Candidate${allCandidates.length>1?'s':''} Assessed</h3>
-            <table class="comparison-table">
-                <thead><tr>
-                    <th>Candidate</th><th>Overall</th><th>Verdict</th>
-                    <th>Strategic</th><th>Technical</th><th>Communication</th><th>Integrity</th>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
+                <p style="font-size:13px;font-weight:600;color:var(--text);">${filtered.length} of ${allCandidates.length} candidate${allCandidates.length!==1?'s':''}</p>
+                <p style="font-size:11px;color:var(--text-dim);">Select candidates to compare</p>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead><tr style="border-bottom:1px solid var(--border);">
+                    <th style="padding:12px 16px;width:40px;"></th>
+                    <th style="text-align:left;padding:12px 16px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:400;">Candidate</th>
+                    <th style="text-align:left;padding:12px 16px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:400;">Overall</th>
+                    <th style="text-align:left;padding:12px 16px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:400;">Verdict</th>
+                    <th style="text-align:left;padding:12px 16px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:400;">Strategic</th>
+                    <th style="text-align:left;padding:12px 16px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:400;">Technical</th>
+                    <th style="text-align:left;padding:12px 16px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:400;">Communication</th>
+                    <th style="text-align:left;padding:12px 16px;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:400;">Integrity</th>
                 </tr></thead>
                 <tbody>${rows}</tbody>
             </table>
         </div>`;
+        document.getElementById('aiComparisonResult').style.display = 'none';
+        updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+        const checked = document.querySelectorAll('#comparisonTable input[type=checkbox]:checked');
+        const bar = document.getElementById('compareSelectedBar');
+        const countEl = document.getElementById('selectedCount');
+        if (checked.length >= 2) {
+            bar.style.display = 'flex';
+            countEl.textContent = checked.length + ' candidates selected';
+        } else {
+            bar.style.display = 'none';
+        }
+    }
+
+    async function runAIComparison() {
+        const key = document.getElementById('apiKey').value.trim();proj-IH5KjAkOKJh7yH-McPlJVZNwTATXHelHK0faFZpxI0b91vKD48TtkmYyFSXOgxI7dvIfHDWztYT3BlbkFJfj4D4iUvxbzeO59TYtHwOu";
+        if (!key) return alert("Please enter your API key in setup first.");
+
+        const checked = document.querySelectorAll('#comparisonTable input[type=checkbox]:checked');
+        const selected = [...checked].map(cb => allCandidates[parseInt(cb.dataset.idx)]).filter(Boolean);
+
+        if (selected.length < 2) return alert("Select at least 2 candidates to compare.");
+
+        const resultDiv = document.getElementById('aiComparisonResult');
+        const textDiv = document.getElementById('aiComparisonText');
+        resultDiv.style.display = 'block';
+        textDiv.innerHTML = '<p style="color:var(--text-dim);">Analyzing candidates...</p>';
+
+        const candidateSummaries = selected.map((c, i) => `
+CANDIDATE ${i+1}: ${c.name}
+Overall: ${c.overall}/100 | Verdict: ${c.verdict}
+Scores: Strategic ${c.scores?.strategic_thinking}, Technical ${c.scores?.technical_depth}, Communication ${c.scores?.communication}, Cross-functional ${c.scores?.cross_functional}
+Summary: ${c.summary || 'N/A'}
+Strengths: ${(c.strengths||[]).join('; ')}
+Gaps: ${(c.gaps||[]).join('; ')}
+`).join('\n---\n');
+
+        try {
+            const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+                body: JSON.stringify({
+                    model: "gpt-4o-mini",
+                    messages: [{
+                        role: "system",
+                        content: "You are a senior hiring manager comparing candidates. Write a concise, specific comparison in plain paragraphs (no bullet points, no headers). Name each candidate by their actual name. Be direct about who is stronger and why, referencing specific evidence from their assessments. End with a clear hiring recommendation."
+                    }, {
+                        role: "user",
+                        content: `Compare these ${selected.length} candidates for the same role:\n\n${candidateSummaries}\n\nWrite a 3-4 paragraph comparison that: (1) identifies the strongest candidate and why, (2) notes key differentiators between them, (3) flags any concerns, (4) gives a clear recommendation.`
+                    }],
+                    temperature: 0.4,
+                    max_tokens: 600
+                })
+            });
+            const data = await res.json();
+            const text = data.choices[0].message.content;
+            textDiv.innerHTML = text.split('\n').filter(l=>l.trim()).map(p => `<p style="margin-bottom:12px;">${p}</p>`).join('');
+        } catch(e) {
+            textDiv.innerHTML = '<p style="color:var(--danger);">Comparison failed: ' + e.message + '</p>';
+        }
+    }
+
+    function submitTerminationMessage() {
+        const msg = document.getElementById('terminationMessage').value.trim();
+        const btn = document.querySelector('#terminationMessage + button');
+        if (msg) {
+            btn.textContent = '✓ Message saved';
+            btn.style.color = 'var(--green)';
+        } else {
+            btn.textContent = '✓ Noted';
+            btn.style.color = 'var(--green)';
+        }
+        btn.disabled = true;
     }
 
     // ── Restart ───────────────────────────────────────────────────────────
@@ -1109,6 +1918,8 @@ INTEGRITY RULES:
         dynamicCases = []; screeningQuestions = []; currentStage = 0; isFollowUp = false;
         interviewLog = []; screeningLog = []; personalData = {};
         integrityLog = []; tabSwitches = 0; pasteEvents = 0; responseTimes = [];
+        warningLog = []; tabWarningShown = false; pasteWarningShown = false;
+        shortAnswerWarningShown = false; gibberishWarningShown = false; gibberishCount = 0;
         if (timerInterval) clearInterval(timerInterval);
         document.getElementById('tabCount').textContent = '0';
         document.getElementById('pasteCount').textContent = '0';
