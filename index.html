@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel V45 — AI Interview Auditor</title>
+    <title>Sentinel V46 — AI Interview Auditor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -267,7 +267,7 @@
         <div class="header">
             <div class="logo-mark">S</div>
             <div class="header-text"><h1>Sentinel Auditor</h1><p>HR Setup</p></div>
-            <div class="badge">V45</div>
+            <div class="badge">V46</div>
         </div>
         <div class="card">
             <div class="card-label">OpenAI API Key
@@ -334,37 +334,51 @@
                     </div>
                 </div>
                 <div>
-                    <p style="font-size:11px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Integrity Policy
-                        
-                    </p>
-                    <div style="display:flex;flex-direction:column;gap:8px;">
-                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                            <input type="radio" name="integrityWeight" value="strict" checked style="accent-color:var(--green);width:auto;">
-                            <div>
-                                <p style="font-size:13px;color:var(--text);margin:0;">Strict</p>
-                                <p style="font-size:11px;color:var(--text-dim);margin:0;">AI use = disqualified</p>
+                    <p style="font-size:11px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Integrity Penalties</p>
+                    <div style="display:flex;flex-direction:column;gap:12px;">
+                        <div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                                <label style="font-size:12px;color:var(--text);">Paste event penalty</label>
+                                <span id="paste_penalty_label" style="font-size:12px;color:var(--green);font-weight:600;">0 pts</span>
                             </div>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                            <input type="radio" name="integrityWeight" value="moderate" style="accent-color:var(--green);width:auto;">
-                            <div>
-                                <p style="font-size:13px;color:var(--text);margin:0;">Moderate</p>
-                                <p style="font-size:11px;color:var(--text-dim);margin:0;">AI use lowers score</p>
+                            <input type="range" id="paste_penalty" min="0" max="20" value="0" oninput="document.getElementById('paste_penalty_label').textContent=this.value+' pts'" style="width:100%;accent-color:var(--green);">
+                        </div>
+                        <div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                                <label style="font-size:12px;color:var(--text);">Tab switch penalty</label>
+                                <span id="tab_penalty_label" style="font-size:12px;color:var(--green);font-weight:600;">0 pts</span>
                             </div>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                            <input type="radio" name="integrityWeight" value="open" style="accent-color:var(--green);width:auto;">
-                            <div>
-                                <p style="font-size:13px;color:var(--text);margin:0;">Open</p>
-                                <p style="font-size:11px;color:var(--text-dim);margin:0;">AI use is acceptable</p>
-                            </div>
-                        </label>
+                            <input type="range" id="tab_penalty" min="0" max="20" value="0" oninput="document.getElementById('tab_penalty_label').textContent=this.value+' pts'" style="width:100%;accent-color:var(--green);">
+                        </div>
+                        <p style="font-size:10px;color:var(--text-dim);">0 = no impact on score. Integrity score shown in report regardless.</p>
                     </div>
                 </div>
             </div>
         </div>
         <button class="btn" id="generateBtn" onclick="startAssessment()">Generate New Questions →</button>
         <button class="btn btn-ghost" id="reuseBtn" onclick="reuseLastQuestions()" style="margin-top:8px;display:none;">🔁 Use Same Questions as Last Session</button>
+
+        <div style="margin-top:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <p style="font-size:13px;color:var(--text);font-weight:500;">Screening questions mandatory</p>
+                <p style="font-size:11px;color:var(--text-dim);margin-top:2px;">If off, candidates can skip screening (Experience Fit will show N/A)</p>
+            </div>
+            <div onclick="toggleScreeningMandatory()" id="screeningToggleBtn" style="width:44px;height:24px;background:var(--green-dim);border-radius:12px;cursor:pointer;position:relative;transition:background 0.2s;">
+                <div id="screeningThumb" style="position:absolute;width:20px;height:20px;background:white;border-radius:50%;top:2px;right:2px;transition:right 0.2s;"></div>
+            </div>
+            <input type="checkbox" id="screeningMandatory" checked style="display:none;">
+        </div>
+
+        <div style="margin-top:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <p style="font-size:13px;color:var(--text);font-weight:500;">Enable camera monitoring</p>
+                <p style="font-size:11px;color:var(--text-dim);margin-top:2px;">Activates candidate camera during assessment</p>
+            </div>
+            <div onclick="toggleCamera()" id="cameraToggleBtn" style="width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;position:relative;transition:background 0.2s;">
+                <div id="cameraThumb" style="position:absolute;width:20px;height:20px;background:white;border-radius:50%;top:2px;left:2px;transition:left 0.2s;"></div>
+            </div>
+            <input type="checkbox" id="cameraEnabled" style="display:none;">
+        </div>
 
         <!-- Category weights — always visible, updated by AI after JD analysis -->
         <div id="weightsPanel" style="margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px;">
@@ -420,7 +434,7 @@
         <div class="header">
             <div class="logo-mark">S</div>
             <div class="header-text"><h1>Sentinel Auditor</h1><p>Step 1 of 3 — Personal Details</p></div>
-            <div class="badge">V45</div>
+            <div class="badge">V46</div>
         </div>
 
         <div class="step-indicator">
@@ -473,7 +487,7 @@
                     </select>
                 </div>
                 <div class="form-field">
-                    <div class="field-label">Current / Last Role</div>
+                    <div class="field-label">Current / Last Role *</div>
                     <input type="text" id="p_role" placeholder="e.g. HR Manager at Startup X">
                 </div>
                 <div class="form-field full">
@@ -498,7 +512,7 @@
         <div class="header">
             <div class="logo-mark">S</div>
             <div class="header-text"><h1>Sentinel Auditor</h1><p>Step 2 of 3 — Role Fit Screening</p></div>
-            <div class="badge">V45</div>
+            <div class="badge">V46</div>
         </div>
 
         <div class="step-indicator">
@@ -533,7 +547,7 @@
         <div class="header">
             <div class="logo-mark">S</div>
             <div class="header-text"><h1>Sentinel Auditor</h1><p id="candidateLabel">Step 3 of 3 — Interview</p></div>
-            <div class="badge">V45</div>
+            <div class="badge">V46</div>
         </div>
 
         <div class="step-indicator">
@@ -587,7 +601,7 @@
         <div class="header">
             <div class="logo-mark">S</div>
             <div class="header-text"><h1>Candidate Comparison</h1><p>All saved assessments</p></div>
-            <div class="badge">V45</div>
+            <div class="badge">V46</div>
         </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end;">
@@ -913,12 +927,11 @@
 
     // ── Start Assessment ──────────────────────────────────────────────────
     async function startAssessment() {
-        const key = document.getElementById('apiKey').value.trim();proj-IH5KjAkOKJh7yH-McPlJVZNwTATXHelHK0faFZpxI0b91vKD48TtkmYyFSXOgxI7dvIfHDWztYT3BlbkFJfj4D4iUvxbzeO59TYtHwOu";
+        const key = document.getElementById('apiKey').value.trim();
         const jd = document.getElementById('jdInput').value.trim();
         const companyName = document.getElementById('companyName').value.trim();
         const questionCount = document.querySelector('input[name="questionCount"]:checked')?.value || '3';
         const depthLevel = document.querySelector('input[name="depthLevel"]:checked')?.value || 'screening';
-        const integrityWeight = document.querySelector('input[name="integrityWeight"]:checked')?.value || 'strict';
 
         if (!key || !jd) return alert("Please provide both API Key and Job Description.");
 
@@ -930,7 +943,7 @@
         document.getElementById('loadingSetup').style.display = 'block';
         document.getElementById('generateBtn').disabled = true;
 
-        window.sentinelConfig = { companyName, questionCount: parseInt(questionCount), depthLevel, integrityWeight };
+        window.sentinelConfig = { companyName, questionCount: parseInt(questionCount), depthLevel, pastePenalty: parseInt(document.getElementById('paste_penalty').value)||0, tabPenalty: parseInt(document.getElementById('tab_penalty').value)||0, screeningMandatory: document.getElementById('screeningMandatory').checked };
 
         try {
             const [screeningRes, casesRes, weightsRes] = await Promise.all([
@@ -989,7 +1002,7 @@
 
     // ── Reuse last session questions ──────────────────────────────────────
     function reuseLastQuestions() {
-        const key = document.getElementById('apiKey').value.trim();proj-IH5KjAkOKJh7yH-McPlJVZNwTATXHelHK0faFZpxI0b91vKD48TtkmYyFSXOgxI7dvIfHDWztYT3BlbkFJfj4D4iUvxbzeO59TYtHwOu";
+        const key = document.getElementById('apiKey').value.trim();
         if (!key) return alert("Please enter your API key first.");
 
         try {
@@ -1004,8 +1017,7 @@
             const companyName = document.getElementById('companyName').value.trim();
             const questionCount = document.querySelector('input[name="questionCount"]:checked')?.value || '3';
             const depthLevel = document.querySelector('input[name="depthLevel"]:checked')?.value || 'screening';
-            const integrityWeight = document.querySelector('input[name="integrityWeight"]:checked')?.value || 'strict';
-            window.sentinelConfig = { companyName, questionCount: parseInt(questionCount), depthLevel, integrityWeight };
+                window.sentinelConfig = { companyName, questionCount: parseInt(questionCount), depthLevel, pastePenalty: parseInt(document.getElementById('paste_penalty').value)||0, tabPenalty: parseInt(document.getElementById('tab_penalty').value)||0, screeningMandatory: document.getElementById('screeningMandatory').checked };
 
             document.getElementById('setupStep').style.display = 'none';
             document.getElementById('personalStep').style.display = 'block';
@@ -1135,7 +1147,10 @@ Return ONLY a raw JSON array, no markdown:
         const email = document.getElementById('p_email').value.trim();
         const city = document.getElementById('p_city').value.trim();
         const experience = document.getElementById('p_experience').value;
-        if (!name || !email || !city || !experience) return alert("Please fill in all required fields.");
+        const role = document.getElementById('p_role').value.trim();
+        if (!name || !email || !city || !experience || !role) return alert("Please fill in all required fields (marked with *).");
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) return alert("Please enter a valid email address (e.g. name@company.com).");
 
         const relocation = document.querySelector('input[name="relocation"]:checked');
 
@@ -1145,7 +1160,7 @@ Return ONLY a raw JSON array, no markdown:
             phone: document.getElementById('p_phone').value.trim(),
             city,
             experience,
-            currentRole: document.getElementById('p_role').value.trim(),
+            currentRole: role,
             linkedin: document.getElementById('p_linkedin').value.trim(),
             relocation: relocation ? relocation.value : 'Not specified'
         };
@@ -1154,7 +1169,7 @@ Return ONLY a raw JSON array, no markdown:
         renderScreeningQuestions();
         document.getElementById('personalStep').style.display = 'none';
         document.getElementById('screeningStep').style.display = 'block';
-        document.getElementById('integrityPanel').style.display = 'block';
+        // integrity panel hidden from candidate
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1185,24 +1200,81 @@ Return ONLY a raw JSON array, no markdown:
     }
 
     // ── Submit Screening ──────────────────────────────────────────────────
+    // ── Camera toggle ─────────────────────────────────────────────────────
+    function toggleCamera() {
+        const cb = document.getElementById('cameraEnabled');
+        const btn = document.getElementById('cameraToggleBtn');
+        const thumb = document.getElementById('cameraThumb');
+        cb.checked = !cb.checked;
+        if (cb.checked) {
+            btn.style.background = 'var(--green-dim)';
+            thumb.style.left = 'auto';
+            thumb.style.right = '2px';
+        } else {
+            btn.style.background = 'var(--border)';
+            thumb.style.left = '2px';
+            thumb.style.right = 'auto';
+        }
+    }
+
+    // ── Screening toggle ──────────────────────────────────────────────────
+    function toggleScreeningMandatory() {
+        const cb = document.getElementById('screeningMandatory');
+        const btn = document.getElementById('screeningToggleBtn');
+        const thumb = document.getElementById('screeningThumb');
+        cb.checked = !cb.checked;
+        if (cb.checked) {
+            btn.style.background = 'var(--green-dim)';
+            thumb.style.right = '2px';
+            thumb.style.left = 'auto';
+        } else {
+            btn.style.background = 'var(--border)';
+            thumb.style.right = 'auto';
+            thumb.style.left = '2px';
+        }
+    }
+
     function submitScreening() {
+        const mandatory = document.getElementById('screeningMandatory').checked;
+
         screeningLog = screeningQuestions.map((q, i) => {
             let answer = '';
             if (q.type === 'yesno') {
                 const checked = document.querySelector(`input[name="sq_${i}"]:checked`);
-                answer = checked ? checked.value : 'Not answered';
+                answer = checked ? checked.value : '';
             } else {
-                answer = document.getElementById(`sq_${i}`).value.trim() || 'Not answered';
+                answer = document.getElementById(`sq_${i}`).value.trim();
             }
             return { question: q.question, type: q.type, answer };
         });
 
-        // Start camera
-        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-            videoStream = stream;
-            document.getElementById('videoFeed').srcObject = stream;
-            document.getElementById('proctorContainer').style.display = 'block';
-        }).catch(() => {});
+        if (mandatory) {
+            // Check all answered
+            const unanswered = screeningLog.filter(s => !s.answer);
+            if (unanswered.length > 0) {
+                alert(`Please answer all screening questions before continuing. (${unanswered.length} remaining)`);
+                return;
+            }
+
+            // Check for gibberish or Hebrew in text answers
+            for (let i = 0; i < screeningLog.length; i++) {
+                const s = screeningLog[i];
+                if (s.type === 'yesno') continue;
+                if (isInvalidAnswer(s.answer)) {
+                    alert(`Answer to question ${i+1} appears invalid. Please provide a genuine response in English.`);
+                    return;
+                }
+            }
+        }
+
+        // Start camera only if enabled
+        if (document.getElementById('cameraEnabled').checked) {
+            navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+                videoStream = stream;
+                document.getElementById('videoFeed').srcObject = stream;
+                document.getElementById('proctorContainer').style.display = 'block';
+            }).catch(() => {});
+        }
 
         document.getElementById('candidateLabel').textContent = personalData.name ? 'Candidate: ' + personalData.name : 'Assessment in progress';
         document.getElementById('screeningStep').style.display = 'none';
@@ -1233,7 +1305,8 @@ Return ONLY a raw JSON array, no markdown:
 
     // ── Follow-Up ─────────────────────────────────────────────────────────
     async function generateFollowUp(answer, caseTitle) {
-const key = document.getElementById('apiKey').value.trim();proj-IH5KjAkOKJh7yH-McPlJVZNwTATXHelHK0faFZpxI0b91vKD48TtkmYyFSXOgxI7dvIfHDWztYT3BlbkFJfj4D4iUvxbzeO59TYtHwOu17s2wJ_UXKITkXG4hJQKFhuSd4_stHhSZKrHzp1an2FA_Kfcl5QA";        const jd = document.getElementById('jdInput').value;
+        const key = document.getElementById('apiKey').value;
+        const jd = document.getElementById('jdInput').value;
 
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -1379,8 +1452,12 @@ Return ONLY JSON: {"title": "Follow-up: [label]", "question": "..."}` },
         if (videoStream) videoStream.getTracks().forEach(t => t.stop());
         document.getElementById('proctorContainer').style.display = 'none';
 
-        const integrityScore = Math.max(0, 100 - (tabSwitches * 25) - (pasteEvents * 20));
-        const policy = (window.sentinelConfig || {}).integrityWeight || 'strict';
+        const key = document.getElementById('apiKey').value;
+        const jd = document.getElementById('jdInput').value;
+        const pastePen = (window.sentinelConfig || {}).pastePenalty || 0;
+        const tabPen = (window.sentinelConfig || {}).tabPenalty || 0;
+        const integrityScore = Math.max(0, 100 - (tabSwitches * tabPen) - (pasteEvents * pastePen));
+        const policy = 'open'; // Integrity handled by HR-defined penalties
         const avgResponseTime = responseTimes.length > 0 ? Math.floor(responseTimes.reduce((a,b)=>a+b,0)/responseTimes.length) : 0;
         const suspiciouslyFast = responseTimes.filter(t => t < 30).length;
         const integrityFlag = integrityLog.length > 0 ? integrityLog.map(e=>e.type+" at "+e.time).join(", ") : "None";
@@ -1452,6 +1529,8 @@ Return ONLY valid JSON, no markdown:
   "verdict": "STRONG HIRE" or "HIRE" or "HOLD" or "NO HIRE",
   "summary": "<2-3 sentences quoting or paraphrasing SPECIFIC things the candidate said>",
   "fit_summary": "<1-2 sentences on background fit>",
+  "experience_fit": <0-100>,
+  "performance_score": <0-100>,
   "scores": {
     "strategic_thinking": <0-100>,
     "communication": <0-100>,
@@ -1460,8 +1539,11 @@ Return ONLY valid JSON, no markdown:
   },
   "strengths": ["<quote or paraphrase something specific they said>", "<strength 2>", "<strength 3>"],
   "gaps": ["<specific gap referencing what they said or failed to say>", "<gap 2>"],
-  "recommendation": "<1 paragraph with specific next steps>"
-}`;
+  "recommendation": "<1 paragraph with specific next steps — MUST align with verdict: if STRONG HIRE or HIRE start with 'Recommend moving forward'; if HOLD start with 'Do not proceed at this stage'; if NO HIRE start with 'Do not proceed'>"
+}
+
+experience_fit: Score 0-100 based ONLY on the candidate's screening answers and background (years of experience, current/last role, screening question responses). How well does their background match the JD requirements? Ignore interview performance entirely.
+performance_score: Score 0-100 based ONLY on the quality of interview answers. How well did they answer the case questions? Ignore background and screening answers entirely.`;
 
         try {
             const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -1471,7 +1553,7 @@ Return ONLY valid JSON, no markdown:
                     model: "gpt-4o-mini",
                     messages: [
                         { role: "system", content: systemPrompt },
-                        { role: "user", content: `JD:\n${jd}\n\nCandidate: ${JSON.stringify(personalData)}\n\n${screeningLog.some(s => s.answer && s.answer !== 'Not answered') ? 'Screening answers:\n' + JSON.stringify(screeningLog, null, 2) + '\n\n' : ''}Interview transcript (each entry includes the phase/question title and the candidate's answer):\n${JSON.stringify(interviewLog, null, 2)}\n\n${policy !== 'open' ? `Integrity events: ${integrityFlag}\nIntegrity score: ${integrityScore}/100\nAvg response time: ${avgResponseTime}s\nFast answers (<30s): ${suspiciouslyFast}` : `Avg response time: ${avgResponseTime}s`}` }
+                        { role: "user", content: `JD:\n${jd}\n\nCandidate: ${JSON.stringify(personalData)}\n\n${screeningLog.some(s => s.answer) ? 'Screening answers (use for Experience Fit score):\n' + JSON.stringify(screeningLog, null, 2) + '\n\n' : 'Screening: not completed — set experience_fit to null\n\n'}Interview transcript (use for Performance Score):\n${JSON.stringify(interviewLog, null, 2)}\n\nAvg response time: ${avgResponseTime}s` }
                     ],
                     temperature: 0.3
                 })
@@ -1496,12 +1578,25 @@ Return ONLY valid JSON, no markdown:
                 report.recommendation += warnNote;
             }
 
+            // Hard-coded verdict prefix — cannot be contradicted
+            const verdictPrefix = {
+                'STRONG HIRE': 'Recommend moving forward. ',
+                'HIRE': 'Recommend moving forward. ',
+                'HOLD': 'Do not proceed at this stage. ',
+                'NO HIRE': 'Do not proceed. '
+            };
+            const prefix = verdictPrefix[report.verdict] || '';
+            if (prefix && !report.recommendation.startsWith(prefix.trim()) && !report.recommendation.includes('Auto-override')) {
+                // Remove any conflicting opener and add correct prefix
+                report.recommendation = prefix + report.recommendation.replace(/^(Recommend moving forward|Do not proceed at this stage|Do not proceed)[^.]*\.\s*/i, '');
+            }
+
             // Apply category weights to overall score
             const weightedOverall = applyWeightsToScore(report.scores);
             if (weightedOverall !== null && !hasDuplicateAnswers && !hasShortAnswers) {
                 // Only apply weights if no hard overrides active
                 const cfg = window.sentinelConfig || {};
-                const p = cfg.integrityWeight || 'strict';
+                const p = 'open';
                 const noIntegrityCap = p === 'open' || integrityScore >= 50;
                 if (noIntegrityCap) {
                     report.overall_score = weightedOverall;
@@ -1542,7 +1637,7 @@ Return ONLY valid JSON, no markdown:
     // ── Hard-coded score enforcement (cannot be bypassed by the LLM) ───────
     function enforceScoreIntegrity(report, integrityScore, hasDuplicateAnswers, hasShortAnswers) {
         let cappedNote = [];
-        const policy = (window.sentinelConfig || {}).integrityWeight || 'strict';
+        const policy = 'open'; // Integrity handled by HR-defined penalties
 
         if (hasDuplicateAnswers) {
             report.overall_score = 10;
@@ -1618,7 +1713,13 @@ Return ONLY valid JSON, no markdown:
         const isWarn = r.verdict === "HOLD";
         const scoreColor = s => s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--warn)' : 'var(--danger)';
         const verdictClass = isPass ? 'pass' : isWarn ? 'warn' : 'fail';
-        const allScores = { ...r.scores, integrity: integrityScore, overall: r.overall_score };
+        const allScores = { 
+            ...r.scores, 
+            integrity: integrityScore, 
+            experience_fit: r.experience_fit ?? '—',
+            performance_score: r.performance_score || '—',
+            overall: r.overall_score 
+        };
         const avgM = Math.floor(avgTime/60), avgS = avgTime%60;
 
         let alertBanners = '';
@@ -1673,6 +1774,8 @@ Return ONLY valid JSON, no markdown:
             cross_functional: 'Cross-Functional',
             technical_depth: 'Technical Depth',
             integrity: 'Integrity',
+            experience_fit: 'Experience Fit',
+            performance_score: 'Performance',
             overall: 'Overall'
         };
 
@@ -1681,7 +1784,7 @@ Return ONLY valid JSON, no markdown:
             <div style="width:44px;height:44px;background:var(--green-dim);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;flex-shrink:0;">S</div>
             <div>
                 <p style="font-size:18px;font-weight:700;color:var(--text);">${personalData.name || 'Candidate'}</p>
-                <p style="font-size:12px;color:var(--text-dim);margin-top:2px;">Assessment Report · Sentinel V45</p>
+                <p style="font-size:12px;color:var(--text-dim);margin-top:2px;">Assessment Report · Sentinel V46</p>
             </div>
             <div style="margin-left:auto;">
                 <span style="font-size:11px;background:${isPass?'rgba(52,211,153,0.1)':isWarn?'rgba(245,158,11,0.1)':'rgba(244,63,94,0.1)'};color:${isPass?'var(--green)':isWarn?'var(--warn)':'var(--danger)'};border:1px solid ${isPass?'rgba(52,211,153,0.25)':isWarn?'rgba(245,158,11,0.25)':'rgba(244,63,94,0.25)'};padding:5px 14px;border-radius:20px;font-weight:600;letter-spacing:0.04em;">${r.verdict}</span>
@@ -1853,7 +1956,7 @@ Return ONLY valid JSON, no markdown:
     }
 
     async function runAIComparison() {
-        const key = document.getElementById('apiKey').value.trim();proj-IH5KjAkOKJh7yH-McPlJVZNwTATXHelHK0faFZpxI0b91vKD48TtkmYyFSXOgxI7dvIfHDWztYT3BlbkFJfj4D4iUvxbzeO59TYtHwOu";
+        const key = document.getElementById('apiKey').value.trim();
         if (!key) return alert("Please enter your API key in setup first.");
 
         const checked = document.querySelectorAll('#comparisonTable input[type=checkbox]:checked');
