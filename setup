@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel — HR Setup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #34d399;
+            --green-dim: #10b981;
+            --bg: #111318;
+            --surface: #1c1f26;
+            --surface2: #22262f;
+            --border: #2e3340;
+            --text: #e2e8f0;
+            --text-dim: #7c8a9e;
+            --danger: #f43f5e;
+            --radius: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 40px 20px; }
+        .container { max-width: 680px; margin: 0 auto; }
+        .header { display: flex; align-items: center; gap: 14px; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .logo { width: 40px; height: 40px; background: var(--green-dim); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: white; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; }
+        .card-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 600; }
+        input[type="text"], input[type="email"], input[type="password"], textarea, select {
+            width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; padding: 12px 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus { border-color: var(--green-dim); }
+        textarea { resize: vertical; }
+        .btn { width: 100%; padding: 14px; background: var(--green-dim); border: none; border-radius: 10px; color: white; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; margin-top: 8px; }
+        .btn:hover { background: var(--green); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+        .btn-ghost:hover { border-color: var(--text-dim); background: transparent; }
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .radio-group { display: flex; flex-direction: column; gap: 8px; }
+        .radio-label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .radio-label input { accent-color: var(--green); width: auto; }
+        .slider-row { display: flex; flex-direction: column; gap: 8px; }
+        .slider-item { display: flex; flex-direction: column; gap: 4px; }
+        .slider-header { display: flex; justify-content: space-between; }
+        input[type="range"] { accent-color: var(--green); width: 100%; }
+        .weights-total { font-size: 13px; font-weight: 700; color: var(--green); }
+        .weights-warn { font-size: 11px; color: var(--danger); display: none; margin-top: 6px; }
+        .loading { display: none; text-align: center; padding: 20px; color: var(--text-dim); font-size: 14px; }
+        .result-box { display: none; background: var(--surface); border: 1px solid var(--green-dim); border-radius: var(--radius); padding: 24px; margin-top: 16px; text-align: center; }
+        .result-link { font-size: 14px; color: var(--green); word-break: break-all; margin: 12px 0; }
+        .copy-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; color: var(--text); font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .copy-btn:hover { border-color: var(--green-dim); color: var(--green); }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-top: 1px solid var(--border); margin-top: 12px; }
+        .toggle-btn { width: 44px; height: 24px; border-radius: 12px; cursor: pointer; position: relative; transition: background 0.2s; background: var(--border); }
+        .toggle-thumb { position: absolute; width: 20px; height: 20px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: left 0.2s; }
+        .toggle-btn.on { background: var(--green-dim); }
+        .toggle-btn.on .toggle-thumb { left: 22px; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <div class="logo">S</div>
+        <div>
+            <h1 style="font-size:20px;font-weight:700;">Sentinel</h1>
+            <p style="font-size:12px;color:var(--text-dim);">HR Setup — Create Assessment</p>
+        </div>
+    </div>
+
+    <!-- Step 1: Basic Info -->
+    <div class="card">
+        <div class="card-label">OpenAI API Key</div>
+        <input type="password" id="apiKey" placeholder="sk-...">
+    </div>
+
+    <div class="card">
+        <div class="card-label">HR Notification Email</div>
+        <input type="email" id="hrEmail" placeholder="you@company.com">
+    </div>
+
+    <div class="card">
+        <div class="card-label">Company Name <span style="color:var(--text-dim);font-size:10px;">(optional)</span></div>
+        <input type="text" id="companyName" placeholder="e.g. MongoDB, Wix, Salesforce...">
+    </div>
+
+    <div class="card">
+        <div class="card-label">Job Description</div>
+        <textarea id="jdInput" rows="8" placeholder="Paste the full job description here..."></textarea>
+    </div>
+
+    <!-- Assessment Settings -->
+    <div class="card">
+        <div class="card-label">Assessment Settings</div>
+        <div class="grid3" style="margin-top:4px;">
+            <div>
+                <p style="font-size:11px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;">Questions</p>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="questionCount" value="1"> 1 + 1 follow-up</label>
+                    <label class="radio-label"><input type="radio" name="questionCount" value="2"> 2 + 2 follow-ups</label>
+                    <label class="radio-label"><input type="radio" name="questionCount" value="3" checked> 3 + 3 follow-ups</label>
+                    <label class="radio-label"><input type="radio" name="questionCount" value="5"> 5 + 5 follow-ups</label>
+                </div>
+            </div>
+            <div>
+                <p style="font-size:11px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;">Depth</p>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="depthLevel" value="screening" checked>
+                        <div><p style="font-size:13px;">Screening</p><p style="font-size:10px;color:var(--text-dim);">How they think</p></div>
+                    </label>
+                    <label class="radio-label"><input type="radio" name="depthLevel" value="indepth">
+                        <div><p style="font-size:13px;">In-depth</p><p style="font-size:10px;color:var(--text-dim);">Technical expertise</p></div>
+                    </label>
+                </div>
+            </div>
+            <div>
+                <p style="font-size:11px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;">Integrity Penalties</p>
+                <div class="slider-row">
+                    <div class="slider-item">
+                        <div class="slider-header"><label style="font-size:12px;">Paste penalty</label><span id="paste_label" style="font-size:12px;color:var(--green);font-weight:600;">0 pts</span></div>
+                        <input type="range" id="paste_penalty" min="0" max="20" value="0" oninput="document.getElementById('paste_label').textContent=this.value+' pts'">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-header"><label style="font-size:12px;">Tab penalty</label><span id="tab_label" style="font-size:12px;color:var(--green);font-weight:600;">0 pts</span></div>
+                        <input type="range" id="tab_penalty" min="0" max="20" value="0" oninput="document.getElementById('tab_label').textContent=this.value+' pts'">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toggles -->
+        <div class="toggle-row">
+            <div><p style="font-size:13px;font-weight:500;">Screening questions mandatory</p><p style="font-size:11px;color:var(--text-dim);">Candidates must complete screening</p></div>
+            <div class="toggle-btn on" id="screeningToggle" onclick="toggleSwitch('screeningToggle','screeningMandatory')"><div class="toggle-thumb"></div></div>
+            <input type="hidden" id="screeningMandatory" value="true">
+        </div>
+        <div class="toggle-row" style="border-top:none;padding-top:0;">
+            <div><p style="font-size:13px;font-weight:500;">Enable camera monitoring</p><p style="font-size:11px;color:var(--text-dim);">Activates candidate camera</p></div>
+            <div class="toggle-btn" id="cameraToggle" onclick="toggleSwitch('cameraToggle','cameraEnabled')"><div class="toggle-thumb"></div></div>
+            <input type="hidden" id="cameraEnabled" value="false">
+        </div>
+    </div>
+
+    <!-- Score Weights -->
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <p class="card-label" style="margin:0;">Score Weights <span id="weightsNote" style="font-size:10px;color:var(--text-dim);font-weight:400;">(default — updates after Generate)</span></p>
+            <span class="weights-total" id="weightsTotal">100%</span>
+        </div>
+        <div class="grid2">
+            <div class="slider-item">
+                <div class="slider-header"><label style="font-size:12px;">Technical Depth</label><span id="w_technical_label" style="font-size:12px;color:var(--green);font-weight:600;">35%</span></div>
+                <input type="range" id="w_technical" min="0" max="100" value="35" oninput="updateWeights('w_technical')">
+            </div>
+            <div class="slider-item">
+                <div class="slider-header"><label style="font-size:12px;">Strategic Thinking</label><span id="w_strategic_label" style="font-size:12px;color:var(--green);font-weight:600;">30%</span></div>
+                <input type="range" id="w_strategic" min="0" max="100" value="30" oninput="updateWeights('w_strategic')">
+            </div>
+            <div class="slider-item">
+                <div class="slider-header"><label style="font-size:12px;">Communication</label><span id="w_communication_label" style="font-size:12px;color:var(--green);font-weight:600;">25%</span></div>
+                <input type="range" id="w_communication" min="0" max="100" value="25" oninput="updateWeights('w_communication')">
+            </div>
+            <div class="slider-item">
+                <div class="slider-header"><label style="font-size:12px;">Cross-Functional</label><span id="w_cross_label" style="font-size:12px;color:var(--green);font-weight:600;">10%</span></div>
+                <input type="range" id="w_cross" min="0" max="100" value="10" oninput="updateWeights('w_cross')">
+            </div>
+        </div>
+        <p class="weights-warn" id="weightsWarn">⚠️ Weights must total 100%</p>
+    </div>
+
+    <button class="btn" id="generateBtn" onclick="createAssessment()">Generate Assessment & Get Link →</button>
+
+    <div class="loading" id="loading">
+        <p>Generating questions and creating assessment...</p>
+        <p style="font-size:12px;margin-top:8px;">This takes about 20-30 seconds</p>
+    </div>
+
+    <div class="result-box" id="resultBox">
+        <p style="font-size:14px;font-weight:600;margin-bottom:8px;">✅ Assessment Created!</p>
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Send this link to your candidate:</p>
+        <div class="result-link" id="resultLink"></div>
+        <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+        <p style="font-size:11px;color:var(--text-dim);margin-top:16px;">Reports will be sent to <span id="resultEmail"></span></p>
+        <button class="btn btn-ghost" style="margin-top:12px;" onclick="createAnother()">Create Another Assessment</button>
+    </div>
+
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://tkgzbxkvoufvyodidaof.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrZ3pieGt2b3VmdnlvZGlkYW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNjM2NTMsImV4cCI6MjEwMDczOTY1M30.fKXpmmMvCILS6fZMVVWmdJOBDG4kmcuBADPWelkrBQ8';
+
+    function toggleSwitch(btnId, inputId) {
+        const btn = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+        const isOn = btn.classList.contains('on');
+        if (isOn) { btn.classList.remove('on'); input.value = 'false'; }
+        else { btn.classList.add('on'); input.value = 'true'; }
+    }
+
+    function updateWeights(changedId) {
+        const ids = ['w_technical','w_strategic','w_communication','w_cross'];
+        const others = ids.filter(id => id !== changedId);
+        const changedVal = parseInt(document.getElementById(changedId).value);
+        const othersSum = others.reduce((s,id) => s + parseInt(document.getElementById(id).value), 0);
+        if (changedVal + othersSum > 100) {
+            document.getElementById(changedId).value = 100 - othersSum;
+        }
+        const vals = ids.map(id => parseInt(document.getElementById(id).value));
+        const total = vals.reduce((a,b) => a+b, 0);
+        ['technical','strategic','communication','cross'].forEach((k,i) => {
+            document.getElementById('w_'+k+'_label').textContent = vals[i] + '%';
+        });
+        document.getElementById('weightsTotal').textContent = total + '%';
+        document.getElementById('weightsTotal').style.color = total === 100 ? 'var(--green)' : 'var(--danger)';
+        document.getElementById('weightsWarn').style.display = total !== 100 ? 'block' : 'none';
+    }
+
+    async function generateWeights(key, jd) {
+        try {
+            const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [{
+                        role: 'system',
+                        content: 'Analyze the job description and suggest percentage weights for 4 scoring categories. Return ONLY valid JSON: {"technical":<0-100>,"strategic":<0-100>,"communication":<0-100>,"cross":<0-100>}. Sum must equal exactly 100.'
+                    }, {
+                        role: 'user',
+                        content: 'JD:\n' + jd.substring(0, 1500)
+                    }],
+                    temperature: 0.3
+                })
+            });
+            const data = await res.json();
+            const text = data.choices[0].message.content;
+            const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+            const sum = json.technical + json.strategic + json.communication + json.cross;
+            return {
+                technical: Math.round(json.technical * 100 / sum),
+                strategic: Math.round(json.strategic * 100 / sum),
+                communication: Math.round(json.communication * 100 / sum),
+                cross: Math.round(json.cross * 100 / sum)
+            };
+        } catch(e) {
+            return { technical: 35, strategic: 30, communication: 25, cross: 10 };
+        }
+    }
+
+    async function generateQuestions(key, jd, companyName, questionCount, depthLevel) {
+        const companyContext = companyName
+            ? `\n\nCOMPANY CONTEXT: The role is at "${companyName}". Use your knowledge about this company to make scenarios specific to THIS company.`
+            : '';
+
+        const depthInstruction = depthLevel === 'indepth'
+            ? `\nDEPTH: IN-DEPTH. Use your knowledge of what this role ACTUALLY involves. Name specific tools, commands, metrics. A generic answer should not score well.\n\nEXAMPLE of good in-depth question (MongoDB CSM): "A Fortune 500 client on Atlas reports 1,800ms read latency. Their 3-node replica set primary is at 94% CPU. Atlas Performance Advisor flags a missing compound index. The CTO asks whether the issue is read preference (primaryPreferred), missing index, or M50→M80 upgrade. Board meeting in 6 hours. What is your diagnostic approach?"`
+            : `\nDEPTH: SCREENING. Test thinking frameworks and communication. Focus on how they approach problems.`;
+
+        const systemPrompt = `Generate exactly ${questionCount} interview case questions.${companyContext}${depthInstruction}
+
+RULES:
+- Reference specific JD responsibilities
+- Include at least 2 pressure elements (dollar amount, deadline, named stakeholder)
+- End each question with: "This question tests:\n• skill1\n• skill2\n• skill3"
+
+Return ONLY a JSON array: [{"title":"Phase 1: Label","question":"Full scenario..."}]`;
+
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+            body: JSON.stringify({
+                model: depthLevel === 'indepth' ? 'gpt-4o-mini' : 'gpt-3.5-turbo',
+                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'JD:\n' + jd + (companyName ? '\nCompany: ' + companyName : '') }],
+                temperature: 0.7
+            })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+        const content = data.choices[0].message.content;
+        const jsonStr = content.substring(content.indexOf('['), content.lastIndexOf(']') + 1);
+        return JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
+    }
+
+    async function generateScreening(key, jd) {
+        const systemPrompt = `Generate exactly 5 screening questions to assess candidate fit for this role.
+Mix of types: 3 open-ended text questions + 2 yes/no questions.
+Focus on: experience, past achievements, specific skills mentioned in JD.
+Return ONLY JSON array: [{"question":"...","type":"text"}, {"question":"...","type":"yesno"}]`;
+
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+            body: JSON.stringify({
+                model: 'gpt-3.5-turbo',
+                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'JD:\n' + jd }],
+                temperature: 0.5
+            })
+        });
+        const data = await res.json();
+        const content = data.choices[0].message.content;
+        const jsonStr = content.substring(content.indexOf('['), content.lastIndexOf(']') + 1);
+        return JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
+    }
+
+    async function saveToSupabase(sessionData) {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/sessions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_KEY,
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(sessionData)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(JSON.stringify(data));
+        return data[0];
+    }
+
+    async function createAssessment() {
+        const key = document.getElementById('apiKey').value.trim();
+        const hrEmail = document.getElementById('hrEmail').value.trim();
+        const jd = document.getElementById('jdInput').value.trim();
+        const companyName = document.getElementById('companyName').value.trim();
+        const questionCount = parseInt(document.querySelector('input[name="questionCount"]:checked')?.value || '3');
+        const depthLevel = document.querySelector('input[name="depthLevel"]:checked')?.value || 'screening';
+
+        if (!key) return alert('Please enter your OpenAI API key.');
+        if (!hrEmail || !hrEmail.includes('@')) return alert('Please enter a valid HR email.');
+        if (!jd) return alert('Please paste the job description.');
+
+        const wTotal = ['w_technical','w_strategic','w_communication','w_cross'].reduce((s,id) => s + parseInt(document.getElementById(id).value), 0);
+        if (wTotal !== 100) return alert('Score weights must total 100%.');
+
+        document.getElementById('generateBtn').disabled = true;
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('resultBox').style.display = 'none';
+
+        try {
+            const [questions, screeningQuestions, weights] = await Promise.all([
+                generateQuestions(key, jd, companyName, questionCount, depthLevel),
+                generateScreening(key, jd),
+                generateWeights(key, jd)
+            ]);
+
+            // Apply AI weights to sliders
+            document.getElementById('w_technical').value = weights.technical;
+            document.getElementById('w_strategic').value = weights.strategic;
+            document.getElementById('w_communication').value = weights.communication;
+            document.getElementById('w_cross').value = weights.cross;
+            updateWeights('w_technical');
+            document.getElementById('weightsNote').textContent = '(AI suggested — adjust if needed)';
+
+            const settings = {
+                depthLevel,
+                questionCount,
+                pastePenalty: parseInt(document.getElementById('paste_penalty').value),
+                tabPenalty: parseInt(document.getElementById('tab_penalty').value),
+                screeningMandatory: document.getElementById('screeningMandatory').value === 'true',
+                cameraEnabled: document.getElementById('cameraEnabled').value === 'true',
+                weights: {
+                    technical: parseInt(document.getElementById('w_technical').value),
+                    strategic: parseInt(document.getElementById('w_strategic').value),
+                    communication: parseInt(document.getElementById('w_communication').value),
+                    cross: parseInt(document.getElementById('w_cross').value)
+                }
+            };
+
+            const session = await saveToSupabase({
+                jd,
+                company_name: companyName,
+                questions,
+                screening_questions: screeningQuestions,
+                settings,
+                hr_email: hrEmail,
+                openai_key: key
+            });
+
+            const assessmentUrl = window.location.href.replace('setup.html', 'assessment.html') + '?session=' + session.id;
+
+            document.getElementById('resultLink').textContent = assessmentUrl;
+            document.getElementById('resultEmail').textContent = hrEmail;
+            document.getElementById('resultBox').style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+
+        } catch(err) {
+            alert('Error: ' + err.message);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('generateBtn').disabled = false;
+        }
+    }
+
+    function copyLink() {
+        const link = document.getElementById('resultLink').textContent;
+        navigator.clipboard.writeText(link).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.textContent = '✓ Copied!';
+            setTimeout(() => btn.textContent = '📋 Copy Link', 2000);
+        });
+    }
+
+    function createAnother() {
+        document.getElementById('resultBox').style.display = 'none';
+        document.getElementById('generateBtn').disabled = false;
+        document.getElementById('jdInput').value = '';
+        document.getElementById('companyName').value = '';
+    }
+</script>
+</body>
+</html>
