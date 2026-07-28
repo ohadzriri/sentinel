@@ -666,7 +666,7 @@
         try {
             const strengths = Array.isArray(report.strengths) ? report.strengths.join('\n') : (report.strengths || '');
             const gaps = Array.isArray(report.gaps) ? report.gaps.join('\n') : (report.gaps || '');
-            await emailjs.send('service_qam0lko', 'template_02buu74', {
+            await emailjs.send('service_qam0lko', 'template_7zv3fsa', {
                 candidate_name: personalData.name || 'Candidate',
                 verdict: report.verdict,
                 overall_score: report.overall_score,
