@@ -212,6 +212,7 @@
         .integrity-warning { background: rgba(255,68,85,0.08); border: 1px solid rgba(255,68,85,0.3); border-radius: 10px; padding: 16px; margin-bottom: 12px; font-size: 13px; color: var(--danger); }
 
     </style>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -655,6 +656,35 @@
     let sessionId = null;
     let sessionData = null;
 
+
+
+    // ── EmailJS ───────────────────────────────────────────────────────────
+    emailjs.init('JIT5hVbfbZpefCpFN');
+
+    async function sendReportEmail(report, integrityScore) {
+        if (!sessionData || !sessionData.hr_email) return;
+        try {
+            const strengths = Array.isArray(report.strengths) ? report.strengths.join('\n') : (report.strengths || '');
+            const gaps = Array.isArray(report.gaps) ? report.gaps.join('\n') : (report.gaps || '');
+            await emailjs.send('service_qam0lko', 'template_02buu74', {
+                candidate_name: personalData.name || 'Candidate',
+                verdict: report.verdict,
+                overall_score: report.overall_score,
+                experience_fit: report.experience_fit || 'N/A',
+                performance_score: report.performance_score || 'N/A',
+                integrity_score: integrityScore,
+                summary: report.summary || '',
+                strengths: strengths,
+                gaps: gaps,
+                recommendation: report.recommendation || '',
+                hr_email: sessionData.hr_email,
+                to_email: sessionData.hr_email
+            });
+            console.log('Report email sent to', sessionData.hr_email);
+        } catch(e) {
+            console.error('EmailJS error:', e);
+        }
+    }
 
     // ── Global API key helper ─────────────────────────────────────────────
     function getApiKey() {
@@ -1725,6 +1755,7 @@ performance_score: Score 0-100 based ONLY on the quality of interview answers. H
 
             renderReport(report, integrityScore, avgResponseTime, suspiciouslyFast, hasDuplicateAnswers, hasShortAnswers);
             saveCandidateReport(report, integrityScore);
+            sendReportEmail(report, integrityScore);
         } catch (err) {
             document.getElementById('recruiterReport').innerHTML = '<div style="color:var(--danger);padding:20px;">Report failed: ' + err.message + '</div>';
             document.getElementById('recruiterReport').style.display = 'block';
