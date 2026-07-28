@@ -1648,6 +1648,8 @@ performance_score: Score 0-100 based ONLY on the quality of interview answers. H
                 })
             });
             const data = await res.json();
+            if (data.error) throw new Error('OpenAI: ' + data.error.message);
+            if (!data.choices || !data.choices[0]) throw new Error('OpenAI returned empty response. Check API key or quota.');
             const content = data.choices[0].message.content;
             const jsonStr = content.substring(content.indexOf('{'), content.lastIndexOf('}') + 1);
             let report = JSON.parse(jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' '));
