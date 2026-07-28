@@ -945,17 +945,18 @@
         if (sessionData && sessionData.settings && sessionData.settings.weights) {
             const w = sessionData.settings.weights;
             return {
-                technical: w.technical / 100,
-                strategic: w.strategic / 100,
-                communication: w.communication / 100,
-                cross: w.cross / 100
+                technical: (w.technical || 35) / 100,
+                strategic: (w.strategic || 30) / 100,
+                communication: (w.communication || 25) / 100,
+                cross: (w.cross || 10) / 100
             };
         }
+        const el = id => { const e = document.getElementById(id); return e ? parseInt(e.value) : 0; };
         return {
-            technical: parseInt(document.getElementById('w_technical').value) / 100,
-            strategic: parseInt(document.getElementById('w_strategic').value) / 100,
-            communication: parseInt(document.getElementById('w_communication').value) / 100,
-            cross: parseInt(document.getElementById('w_cross').value) / 100
+            technical: el('w_technical') / 100 || 0.35,
+            strategic: el('w_strategic') / 100 || 0.30,
+            communication: el('w_communication') / 100 || 0.25,
+            cross: el('w_cross') / 100 || 0.10
         };
     }
 
@@ -1007,8 +1008,10 @@
     // ── Start Assessment ──────────────────────────────────────────────────
     async function startAssessment() { return; // Handled by loadSession
     } async function _startAssessment_disabled() {
-        const key = (sessionData && sessionData.openai_key) ? sessionData.openai_key : (document.getElementById('apiKey') ? document.getElementById('apiKey').value.trim() : '');
-        if (!key) { alert('Session error: API key not found. Please contact the hiring team.'); return; }
+        let key = '';
+        if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
+        else { const el = document.getElementById('apiKey'); if (el) key = el.value.trim(); }
+        if (!key) { alert('Session error: missing API key.'); return; }
         const jd = (sessionData && sessionData.jd) ? sessionData.jd : (document.getElementById('jdInput') ? document.getElementById('jdInput').value.trim() : '');
         const companyName = document.getElementById('companyName').value.trim();
         const questionCount = document.querySelector('input[name="questionCount"]:checked')?.value || '3';
@@ -1083,8 +1086,10 @@
 
     // ── Reuse last session questions ──────────────────────────────────────
     function reuseLastQuestions() {
-        const key = (sessionData && sessionData.openai_key) ? sessionData.openai_key : (document.getElementById('apiKey') ? document.getElementById('apiKey').value.trim() : '');
-        if (!key) { alert('Session error: API key not found. Please contact the hiring team.'); return; }
+        let key = '';
+        if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
+        else { const el = document.getElementById('apiKey'); if (el) key = el.value.trim(); }
+        if (!key) { alert('Session error: missing API key.'); return; }
         if (!key) return alert("Please enter your API key first.");
 
         try {
@@ -2041,8 +2046,10 @@ performance_score: Score 0-100 based ONLY on the quality of interview answers. H
     }
 
     async function runAIComparison() {
-        const key = (sessionData && sessionData.openai_key) ? sessionData.openai_key : (document.getElementById('apiKey') ? document.getElementById('apiKey').value.trim() : '');
-        if (!key) { alert('Session error: API key not found. Please contact the hiring team.'); return; }
+        let key = '';
+        if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
+        else { const el = document.getElementById('apiKey'); if (el) key = el.value.trim(); }
+        if (!key) { alert('Session error: missing API key.'); return; }
         if (!key) return alert("Please enter your API key in setup first.");
 
         const checked = document.querySelectorAll('#comparisonTable input[type=checkbox]:checked');
