@@ -942,6 +942,15 @@
     }
 
     function getWeights() {
+        if (sessionData && sessionData.settings && sessionData.settings.weights) {
+            const w = sessionData.settings.weights;
+            return {
+                technical: w.technical / 100,
+                strategic: w.strategic / 100,
+                communication: w.communication / 100,
+                cross: w.cross / 100
+            };
+        }
         return {
             technical: parseInt(document.getElementById('w_technical').value) / 100,
             strategic: parseInt(document.getElementById('w_strategic').value) / 100,
@@ -998,8 +1007,9 @@
     // ── Start Assessment ──────────────────────────────────────────────────
     async function startAssessment() { return; // Handled by loadSession
     } async function _startAssessment_disabled() {
-        const key = sessionData ? sessionData.openai_key : document.getElementById('apiKey').value.trim();
-        const jd = sessionData ? sessionData.jd : document.getElementById('jdInput').value.trim();
+        const key = (sessionData && sessionData.openai_key) ? sessionData.openai_key : (document.getElementById('apiKey') ? document.getElementById('apiKey').value.trim() : '');
+        if (!key) { alert('Session error: API key not found. Please contact the hiring team.'); return; }
+        const jd = (sessionData && sessionData.jd) ? sessionData.jd : (document.getElementById('jdInput') ? document.getElementById('jdInput').value.trim() : '');
         const companyName = document.getElementById('companyName').value.trim();
         const questionCount = document.querySelector('input[name="questionCount"]:checked')?.value || '3';
         const depthLevel = document.querySelector('input[name="depthLevel"]:checked')?.value || 'screening';
@@ -1073,7 +1083,8 @@
 
     // ── Reuse last session questions ──────────────────────────────────────
     function reuseLastQuestions() {
-        const key = sessionData ? sessionData.openai_key : document.getElementById('apiKey').value.trim();
+        const key = (sessionData && sessionData.openai_key) ? sessionData.openai_key : (document.getElementById('apiKey') ? document.getElementById('apiKey').value.trim() : '');
+        if (!key) { alert('Session error: API key not found. Please contact the hiring team.'); return; }
         if (!key) return alert("Please enter your API key first.");
 
         try {
@@ -1306,7 +1317,9 @@ Return ONLY a raw JSON array, no markdown:
     }
 
     function submitScreening() {
-        const mandatory = document.getElementById('screeningMandatory').checked;
+        const mandatory = sessionData 
+            ? (sessionData.settings && sessionData.settings.screeningMandatory === true)
+            : (document.getElementById('screeningMandatory') ? document.getElementById('screeningMandatory').value === 'true' : true);
 
         screeningLog = screeningQuestions.map((q, i) => {
             let answer = '';
@@ -2028,7 +2041,8 @@ performance_score: Score 0-100 based ONLY on the quality of interview answers. H
     }
 
     async function runAIComparison() {
-        const key = sessionData ? sessionData.openai_key : document.getElementById('apiKey').value.trim();
+        const key = (sessionData && sessionData.openai_key) ? sessionData.openai_key : (document.getElementById('apiKey') ? document.getElementById('apiKey').value.trim() : '');
+        if (!key) { alert('Session error: API key not found. Please contact the hiring team.'); return; }
         if (!key) return alert("Please enter your API key in setup first.");
 
         const checked = document.querySelectorAll('#comparisonTable input[type=checkbox]:checked');
