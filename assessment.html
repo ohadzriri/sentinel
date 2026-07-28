@@ -670,6 +670,7 @@
             const data = await res.json();
             if (!data || !data[0]) throw new Error('Session not found');
             sessionData = data[0];
+            window.sessionData = sessionData; // Make globally accessible
             // Apply settings from session
             window.sentinelConfig = {
                 ...sessionData.settings,
@@ -1009,7 +1010,8 @@
     async function startAssessment() { return; // Handled by loadSession
     } async function _startAssessment_disabled() {
         let key = '';
-        if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
+        if (window.sessionData && window.sessionData.openai_key) { key = window.sessionData.openai_key; }
+        else if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
         else { const el = document.getElementById('apiKey'); if (el) key = el.value.trim(); }
         if (!key) { alert('Session error: missing API key.'); return; }
         const jd = (sessionData && sessionData.jd) ? sessionData.jd : (document.getElementById('jdInput') ? document.getElementById('jdInput').value.trim() : '');
@@ -1087,7 +1089,8 @@
     // ── Reuse last session questions ──────────────────────────────────────
     function reuseLastQuestions() {
         let key = '';
-        if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
+        if (window.sessionData && window.sessionData.openai_key) { key = window.sessionData.openai_key; }
+        else if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
         else { const el = document.getElementById('apiKey'); if (el) key = el.value.trim(); }
         if (!key) { alert('Session error: missing API key.'); return; }
         if (!key) return alert("Please enter your API key first.");
@@ -2049,7 +2052,8 @@ performance_score: Score 0-100 based ONLY on the quality of interview answers. H
 
     async function runAIComparison() {
         let key = '';
-        if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
+        if (window.sessionData && window.sessionData.openai_key) { key = window.sessionData.openai_key; }
+        else if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
         else { const el = document.getElementById('apiKey'); if (el) key = el.value.trim(); }
         if (!key) { alert('Session error: missing API key.'); return; }
         if (!key) return alert("Please enter your API key in setup first.");
