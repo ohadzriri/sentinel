@@ -655,6 +655,15 @@
     let sessionId = null;
     let sessionData = null;
 
+
+    // ── Global API key helper ─────────────────────────────────────────────
+    function getApiKey() {
+        if (window.sessionData && window.sessionData.openai_key) return window.sessionData.openai_key;
+        if (typeof sessionData !== 'undefined' && sessionData && sessionData.openai_key) return sessionData.openai_key;
+        const el = document.getElementById('apiKey');
+        return el ? el.value.trim() : '';
+    }
+
     // Load session from URL
     async function loadSession() {
         const params = new URLSearchParams(window.location.search);
@@ -1009,10 +1018,7 @@
     // ── Start Assessment ──────────────────────────────────────────────────
     async function startAssessment() { return; // Handled by loadSession
     } async function _startAssessment_disabled() {
-        let key = '';
-        if (window.sessionData && window.sessionData.openai_key) { key = window.sessionData.openai_key; }
-        else if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
-        else { const el = document.getElementById('apiKey'); if (el) key = el.value.trim(); }
+        const key = getApiKey();
         if (!key) { alert('Session error: missing API key.'); return; }
         const jd = (sessionData && sessionData.jd) ? sessionData.jd : (document.getElementById('jdInput') ? document.getElementById('jdInput').value.trim() : '');
         const companyName = document.getElementById('companyName').value.trim();
@@ -1088,10 +1094,7 @@
 
     // ── Reuse last session questions ──────────────────────────────────────
     function reuseLastQuestions() {
-        let key = '';
-        if (window.sessionData && window.sessionData.openai_key) { key = window.sessionData.openai_key; }
-        else if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
-        else { const el = document.getElementById('apiKey'); if (el) key = el.value.trim(); }
+        const key = getApiKey();
         if (!key) { alert('Session error: missing API key.'); return; }
         if (!key) return alert("Please enter your API key first.");
 
@@ -1397,7 +1400,7 @@ Return ONLY a raw JSON array, no markdown:
 
     // ── Follow-Up ─────────────────────────────────────────────────────────
     async function generateFollowUp(answer, caseTitle) {
-        const key = document.getElementById('apiKey').value;
+        const key = getApiKey();
         const jd = document.getElementById('jdInput').value;
 
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -1544,7 +1547,7 @@ Return ONLY JSON: {"title": "Follow-up: [label]", "question": "..."}` },
         if (videoStream) videoStream.getTracks().forEach(t => t.stop());
         document.getElementById('proctorContainer').style.display = 'none';
 
-        const key = document.getElementById('apiKey').value;
+        const key = getApiKey();
         const jd = document.getElementById('jdInput').value;
         const pastePen = (window.sentinelConfig || {}).pastePenalty || 0;
         const tabPen = (window.sentinelConfig || {}).tabPenalty || 0;
@@ -2051,10 +2054,7 @@ performance_score: Score 0-100 based ONLY on the quality of interview answers. H
     }
 
     async function runAIComparison() {
-        let key = '';
-        if (window.sessionData && window.sessionData.openai_key) { key = window.sessionData.openai_key; }
-        else if (sessionData && sessionData.openai_key) { key = sessionData.openai_key; }
-        else { const el = document.getElementById('apiKey'); if (el) key = el.value.trim(); }
+        const key = getApiKey();
         if (!key) { alert('Session error: missing API key.'); return; }
         if (!key) return alert("Please enter your API key in setup first.");
 
@@ -2134,7 +2134,7 @@ Gaps: ${(c.gaps||[]).join('; ')}
         document.getElementById('finalView').style.display = 'none';
         document.getElementById('loadingSetup').style.display = 'none';
         document.getElementById('generateBtn').disabled = false;
-        document.getElementById('apiKey').value = '';
+        getApiKey() = '';
         document.getElementById('jdInput').value = '';
         showSetup();
     }
