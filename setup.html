@@ -225,7 +225,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
                 body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
+                    model: 'gpt-4o-mini',
                     messages: [{
                         role: 'system',
                         content: 'Analyze the job description and suggest percentage weights for 4 scoring categories. Return ONLY valid JSON: {"technical":<0-100>,"strategic":<0-100>,"communication":<0-100>,"cross":<0-100>}. Sum must equal exactly 100.'
@@ -273,7 +273,7 @@ Return ONLY a JSON array: [{"title":"Phase 1: Label","question":"Full scenario..
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
-                model: depthLevel === 'indepth' ? 'gpt-4o-mini' : 'gpt-3.5-turbo',
+                model: 'gpt-4o-mini',
                 messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'JD:\n' + jd + (companyName ? '\nCompany: ' + companyName : '') }],
                 temperature: 0.7
             })
@@ -295,7 +295,7 @@ Return ONLY JSON array: [{"question":"...","type":"text"}, {"question":"...","ty
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model: 'gpt-4o-mini',
                 messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'JD:\n' + jd }],
                 temperature: 0.5
             })
@@ -381,7 +381,10 @@ Return ONLY JSON array: [{"question":"...","type":"text"}, {"question":"...","ty
                 openai_key: key
             });
 
-            const assessmentUrl = window.location.href.replace('setup.html', 'assessment.html') + '?session=' + session.id;
+            const baseUrl = window.location.hostname === 'localhost' || window.location.protocol === 'file:'
+                ? 'https://ohadzriri.github.io/sentinel/assessment.html'
+                : window.location.href.replace('setup.html', 'assessment.html').split('?')[0];
+            const assessmentUrl = baseUrl + '?session=' + session.id;
 
             document.getElementById('resultLink').textContent = assessmentUrl;
             document.getElementById('resultEmail').textContent = hrEmail;
