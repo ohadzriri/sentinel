@@ -664,9 +664,28 @@
     async function sendReportEmail(report, integrityScore) {
         if (!sessionData || !sessionData.hr_email) return;
         try {
-            const strengths = Array.isArray(report.strengths) ? report.strengths.join('\n') : (report.strengths || '');
-            const gaps = Array.isArray(report.gaps) ? report.gaps.join('\n') : (report.gaps || '');
+            const strengths = Array.isArray(report.strengths) ? report.strengths.join('\n• ') : (report.strengths || '');
+            const gaps = Array.isArray(report.gaps) ? report.gaps.join('\n• ') : (report.gaps || '');
+            const messageBody = `Candidate: ${personalData.name || 'Candidate'}
+Verdict: ${report.verdict}
+Overall Score: ${report.overall_score}/100
+Experience Fit: ${report.experience_fit || 'N/A'}/100
+Performance Score: ${report.performance_score || 'N/A'}/100
+Integrity Score: ${integrityScore}/100
+
+Summary:
+${report.summary || ''}
+
+Strengths:
+• ${strengths}
+
+Gaps:
+• ${gaps}
+
+Recommendation:
+${report.recommendation || ''}`;
             await emailjs.send('service_qam0lko', 'template_7zv3fsa', {
+                name: `Sentinel — ${personalData.name || 'Candidate'}`,
                 candidate_name: personalData.name || 'Candidate',
                 verdict: report.verdict,
                 overall_score: report.overall_score,
@@ -677,6 +696,8 @@
                 strengths: strengths,
                 gaps: gaps,
                 recommendation: report.recommendation || '',
+                message: messageBody,
+                time: new Date().toLocaleString(),
                 hr_email: sessionData.hr_email,
                 to_email: sessionData.hr_email
             });
@@ -735,7 +756,8 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'apikey': SUPABASE_KEY,
-                    'Authorization': 'Bearer ' + SUPABASE_KEY
+                    'Authorization': 'Bearer ' + SUPABASE_KEY,
+                    'Prefer': 'return=minimal'
                 },
                 body: JSON.stringify({
                     session_id: sessionId,
@@ -743,13 +765,13 @@
                     email: personalData.email || '',
                     verdict: report.verdict,
                     overall_score: report.overall_score,
-                    scores: report.scores,
+                    scores: JSON.stringify(report.scores),
                     experience_fit: report.experience_fit || null,
                     performance_score: report.performance_score || null,
                     integrity_score: integrityScore,
                     summary: report.summary || '',
                     recommendation: report.recommendation || '',
-                    report: report
+                    report: JSON.stringify(report)
                 })
             });
         } catch(e) {
@@ -1018,7 +1040,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
                 body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
+                    model: "gpt-4o-mini",
                     messages: [{
                         role: "system",
                         content: "You analyze job descriptions and suggest scoring weights. Return ONLY valid JSON, no markdown: {\"technical\": <0-100>, \"strategic\": <0-100>, \"communication\": <0-100>, \"cross\": <0-100>}. The four values must sum to exactly 100. Base weights on how critical each dimension is for this specific role."
@@ -1179,7 +1201,7 @@ Return ONLY a raw JSON array, no markdown:
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
-                model: "gpt-3.5-turbo",
+                model: "gpt-4o-mini",
                 messages: [
                     { role: "system", content: systemPrompt },
                     { role: "user", content: "JD:\n" + jd }
@@ -1249,7 +1271,7 @@ Return ONLY a raw JSON array, no markdown:
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
-                model: depthLevel === 'indepth' ? "gpt-4o-mini" : "gpt-3.5-turbo",
+                model: "gpt-4o-mini",
                 messages: [
                     { role: "system", content: systemPrompt },
                     { role: "user", content: "JD:\n" + jd + (companyName ? "\n\nCompany: " + companyName : '') }
@@ -1437,7 +1459,7 @@ Return ONLY a raw JSON array, no markdown:
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
             body: JSON.stringify({
-                model: "gpt-3.5-turbo",
+                model: "gpt-4o-mini",
                 messages: [
                     { role: "system", content: `You are a senior hiring manager. Generate ONE sharp follow-up question that:
 - Challenges a SPECIFIC claim or gap in the candidate's answer
