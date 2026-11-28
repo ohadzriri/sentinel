@@ -666,6 +666,7 @@
         try {
             const strengths = Array.isArray(report.strengths) ? report.strengths.join('\n• ') : (report.strengths || '');
             const gaps = Array.isArray(report.gaps) ? report.gaps.join('\n• ') : (report.gaps || '');
+            const dashboardUrl = 'https://ohadzriri.github.io/sentinel/dashboard.html?session=' + sessionId;
             const messageBody = `Candidate: ${personalData.name || 'Candidate'}
 Verdict: ${report.verdict}
 Overall Score: ${report.overall_score}/100
@@ -683,7 +684,11 @@ Gaps:
 • ${gaps}
 
 Recommendation:
-${report.recommendation || ''}`;
+${report.recommendation || ''}
+
+---
+View all candidates for this assessment:
+${dashboardUrl}`;
             await emailjs.send('service_qam0lko', 'template_7zv3fsa', {
                 name: `Sentinel — ${personalData.name || 'Candidate'}`,
                 candidate_name: personalData.name || 'Candidate',
